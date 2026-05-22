@@ -1,0 +1,165 @@
+/* 
+  2D Skeletal Animation Player Premium Stylesheet
+  - Theme: Cyberpunk Neon Slate (Dark mode, Glassmorphism, Micro-interaction)
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;600;800&display=swap');
+
+:root {
+  --bg-primary: #0b0f19;
+  --bg-secondary: rgba(17, 24, 39, 0.7);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --neon-indigo: #6366f1;
+  --neon-purple: #a855f7;
+  --neon-cyan: #06b6d4;
+  --neon-rose: #f43f5e;
+  --shadow-neon: 0 0 20px rgba(99, 102, 241, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden; /* Viewport calculations will handle inner scrolling if needed */
+}
+
+/* 1. 수직 적층 레이아웃 컨테이너 */
+.player-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px; /* 모바일형 수직 레이아웃 기둥 */
+  height: 100vh;
+  border-left: 1px solid var(--border-glass);
+  border-right: 1px solid var(--border-glass);
+  background: radial-gradient(circle at top, rgba(99, 102, 241, 0.05) 0%, transparent 60%);
+  position: relative;
+}
+
+/* 2. 상단 헤더 영역 (Exclude Area 1) */
+.player-header {
+  padding: 16px 20px;
+  background: var(--bg-secondary);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-glass);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.player-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--neon-indigo), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.reset-button {
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  color: #fda4af;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reset-button:hover {
+  background: rgba(244, 63, 94, 0.3);
+  border-color: var(--neon-rose);
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.2);
+  transform: translateY(-1px);
+}
+
+.reset-button:active {
+  transform: translateY(0);
+}
+
+/* 3. 중앙 WebGL 캔버스 뷰포트 (실제 구동 영역) */
+.canvas-viewport-area {
+  flex: 1;
+  display: flex;
+  align-items: flex-start; /* 상단 정렬 강제 */
+  justify-content: center;
+  background: #090d16;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 4. 중앙 대화 텍스트 및 선택지 판넬 (Exclude Area 2) */
+.dialog-panel {
+  padding: 20px;
+  background: var(--bg-secondary);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border-glass);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dialog-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+.choices-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.choice-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.choice-btn:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: var(--neon-indigo);
+  box-shadow: var(--shadow-neon);
+  transform: translateX(4px);
+}
+
+/* 5. 최하단 광고/배너 스페이스 (Exclude Area 3) */
+.ads-banner {
+  height: 50px;
+  background: #080b11;
+  border-top: 1px solid var(--border-glass);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}

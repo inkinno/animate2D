@@ -1,0 +1,153 @@
+/**
+ * Animate2D Common UI Components Stylesheet
+ * Premium, reusable elements for Player, Maker and Portal
+ */
+
+/* 1. Glassmorphism Card Base */
+.glass-panel {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.glass-panel-interactive {
+  transition: var(--transition-smooth);
+}
+
+.glass-panel-interactive:hover {
+  border-color: var(--glass-border-glow);
+  box-shadow: var(--shadow-glass), var(--shadow-indigo);
+  transform: translateY(-2px);
+}
+
+/* 2. Premium Form Inputs */
+.neon-input {
+  width: 100%;
+  background: rgba(8, 12, 24, 0.6);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: var(--transition-fast);
+  outline: none;
+}
+
+.neon-input:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: var(--shadow-cyan);
+}
+
+/* Label Styling */
+.neon-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* 3. Neon Glow Buttons */
+.neon-btn {
+  background: transparent;
+  border: 1px solid var(--accent-indigo);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition-smooth);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.1);
+}
+
+.neon-btn:hover {
+  background: var(--accent-indigo);
+  box-shadow: var(--shadow-indigo);
+  transform: translateY(-1px);
+}
+
+.neon-btn:active {
+  transform: translateY(0);
+}
+
+.neon-btn-cyan {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.1);
+}
+
+.neon-btn-cyan:hover {
+  background: var(--accent-cyan);
+  box-shadow: var(--shadow-cyan);
+  color: var(--bg-dark-950);
+}
+
+.neon-btn-rose {
+  border-color: var(--accent-rose);
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.1);
+}
+
+.neon-btn-rose:hover {
+  background: var(--accent-rose);
+  box-shadow: var(--shadow-rose);
+}
+
+/* 4. Timeline Range Slider */
+.neon-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bg-dark-700);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.neon-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  cursor: pointer;
+  box-shadow: var(--shadow-cyan);
+  transition: var(--transition-fast);
+}
+
+.neon-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  background: var(--text-main);
+}
+
+/* 5. Tooltip/Badge Style */
+.neon-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #a5b4fc;
+}
+
+.neon-badge-cyan {
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: #a5f3fc;
+}

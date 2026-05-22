@@ -1,0 +1,113 @@
+[Document 1] 통합 기획서 : 아키텍처 및 데이터 표준 블루프린트 (Master Blueprint)
+0. goals
+이것은 하나의 os 즉, 시스템을 만드는 작업입니다.
+너무 단단한 연결은 모듈화를 해치고 유지보수를 어렵게 합니다.
+느슨한 연결을 모든 부속과 기능에 적용합시다.
+ DRY 원칙 준수와 SOLID 시스템을 확인하고. 데이터 중심으로 엔진이 어떻게 돌아갈지 예측하고 설계합시다.
+
+1. 시스템 아키텍처 개요 (System Architecture)
+본 시스템은 외부 서버 인터벤션(Intervention)이 없는 '제로 서버 타임라인 구동(Zero-Server Timeline Execution)' 구조를 지향한다. 모든 연산은 유저의 런타임 기기(Client-side)에서 처리되며, 시스템은 완벽히 디커플링(Decoupling)된 3대 요소로 구성된다.
+
+Core Engine: 데이터 스키마를 파싱하고 시간 흐름(Delta Time)에 따라 변형 행렬(Matrix)을 계산하는 연산부.
+
+Player: WebGL 컨텍스트 기반 캔버스에 엔진의 연산 결과물을 드로우콜 최적화(Batching)하여 표출하는 출력부. 웹툰이나 웹게임 페이지에 가볍게 삽입되어 동작한다.
+
+Maker: 타임라인 기반으로 본(Bone)의 계층 구조를 설정하고 SRT 값을 타임라인 스크러버와 매핑하는 비파괴식(Non-destructive) 웹 저작 도구. 개발자가 아닌 디자이너나 작가가 이미지를 업로드하고, 피봇을 지정하고, 타임라인에서 키프레임을 주어 애니메이션 데이터(JSON)를 내보내는(Export) 웹 기반 GUI 툴이다.
+
+2. 통합 도메인 기술 용어 사전 (Technical Lexicon)
+AI 고도화 구현 및 정밀한 명령 생성을 위해 시스템 표준 용어를 다음과 같이 강제한다.
+
+아핀 변환 (Affine Transformation): 평행성을 유지하면서 이미지를 이동(T), 회전(R), 크기(S) 변환하는 2D 그래픽스 수학 연산.
+
+포워드 키네마틱스 (FK - Forward Kinematics): 부모 본의 트랜스폼 변형이 자식 본으로 순차 상속되는 계층형 역학 구조 (어깨 -> 상완 -> 하완 -> 손).
+
+원점 변환 (Pivot / Origin Point Alignment): 파츠 객체의 로컬 좌표계 기준 (0,0) 위치를 상대 좌표(0.0 ~ 1.0)로 재정의하여 회전 및 스케일의 중심축을 고정하는 기법.
+
+시간 기반 보간 (Delta Time-based Interpolation): 하드웨어 프레임 레이트에 종속되지 않고, 절대적인 흐름 시간(ms)을 기준으로 프레임 사이의 값을 채워 프레임 드랍 발생 시에도 애니메이션 속도를 보존하는 최적화 기법.
+
+배치 렌더링 (Batch Rendering / Sprite Batching): 다수의 스프라이트 조각들을 단 1회의 드로우콜(Draw Call)로 GPU에 전송하여 CPU-GPU 병목(Jank)을 원천 차단하는 웹 브라우저 가속 기술.
+
+Squash & Stretch (으깨고 늘리기): 파츠의 결합부(피봇)가 고정된 상태에서 상하/좌우 스케일을 실시간 비대칭 연산하여, 메쉬 변형 없이도 역동적인 관절 움직임과 단축법(Foreshortening) 기반의 원근감을 구현하는 기법.
+
+동적 슬롯 바인딩 (Dynamic Slot Binding): 본 뼈대에 이미지를 직접 귀속시키지 않고 가상의 빈 컨테이너(슬롯)를 둔 뒤, 런타임에 JSON 데이터 명령이나 이벤트를 통해 이미지 리소스를 실시간으로 교체(무기, 의상 스왑)하는 구조.
+
+3. 통합 마스터 데이터 스키마 규격 (Master JSON Schema)
+엔진, 플레이어, 메이커가 상호 교환할 단일 파일 데이터의 표준 규격 사양이다. 모든 좌표와 변형값은 소수점 행렬 구조로 선언된다.
+
+JSON
+{
+  "meta": {
+    "version": "1.0.0",
+    "generator": "2D-Skeletal-Maker",
+    "renderMode": "SPRITE_RIGID_HARNESS"
+  },
+  "library": {
+    "sprites": [
+      { "id": "img_arm_upper", "type": "bitmap", "src": "data:image/webp;base64,..." },
+      { "id": "img_arm_lower", "type": "bitmap", "src": "data:image/webp;base64,..." },
+      { "id": "img_sword", "type": "bitmap", "src": "data:image/webp;base64,..." },
+      { "id": "img_shield", "type": "bitmap", "src": "data:image/webp;base64,..." }
+    ]
+  },
+  "skeleton": {
+    "bones": [
+      { "id": "root", "parent": null, "x": 0.0, "y": 0.0, "rotation": 0.0, "scaleX": 1.0, "scaleY": 1.0 },
+      { "id": "shoulder_R", "parent": "root", "x": 150.0, "y": 200.0, "rotation": 0.0, "scaleX": 1.0, "scaleY": 1.0 },
+      { "id": "elbow_R", "parent": "shoulder_R", "x": 0.0, "y": 120.0, "rotation": 0.0, "scaleX": 1.0, "scaleY": 1.0 }
+    ],
+    "slots": [
+      { "id": "slot_arm_upper_R", "bone": "shoulder_R", "defaultAsset": "img_arm_upper", "zIndex": 5, "pivot": { "x": 0.5, "y": 0.05 } },
+      { "id": "slot_weapon_R", "bone": "elbow_R", "defaultAsset": "img_sword", "zIndex": 6, "pivot": { "x": 0.1, "y": 0.9 } }
+    ]
+  },
+  "animations": {
+    "punch_sequence": {
+      "duration": 2000,
+      "timeline": {
+        "shoulder_R": {
+          "rotation": [
+            { "time": 0, "value": 0.0, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 500, "value": 45.0, "easing": [0.25, 0.1, 0.25, 1.0] }
+          ]
+        },
+        "elbow_R": {
+          "scaleY": [
+            { "time": 0, "value": 1.0, "easing": [0.42, 0.0, 0.58, 1.0] },
+            { "time": 300, "value": 0.3, "easing": [0.42, 0.0, 0.58, 1.0] }
+          ]
+        },
+        "slot_weapon_R": {
+          "scaleX": [
+            { "time": 0, "value": 1.0, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 300, "value": 2.0, "easing": [0.25, 0.1, 0.25, 1.0] }
+          ],
+          "scaleY": [
+            { "time": 0, "value": 1.0, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 300, "value": 2.0, "easing": [0.25, 0.1, 0.25, 1.0] }
+          ],
+          "assetSwap": [
+            { "time": 0, "assetId": "img_sword" },
+            { "time": 1000, "assetId": "img_shield" }
+          ]
+        }
+      }
+    }
+  }
+}
+4. 제로 쟁크(Zero-Jank) 성능 한계선 명세
+어떠한 연출 상황에서도 프레임 레이트 드랍 및 렉 현상(Jank)이 발생하는 것을 방지하기 위해 다음 제약 사항을 통합 코어의 하드웨어 한계선으로 규정한다.
+
+드로우콜 카운트 세일링 (Draw Call Ceiling): 한 화면에 아무리 많은 파츠가 올라와도, 플레이어는 엔진 내부적으로 텍스처 아틀라스 결합 및 자동 스프라이트 배치(Sprite Batching) 처리를 수행하여 단일 뷰포트당 드로우콜 횟수를 최대 3회 이하로 제한한다.
+
+가비지 컬렉션리스 (Garbage Collection-less Loop): 실시간 런타임 재생 루프(requestAnimationFrame) 내부에서는 절대 새로운 연산용 행렬 객체나 배열을 동적 할당하지 않는다. 메모리 단편화로 인한 가비지 컬렉터 구동 렉을 방지하기 위해, 모든 행렬 연산 변수는 '오브젝트 풀링(Object Pooling)' 기법을 통해 사전에 할당된 정적 메모리 공간만 재사용한다.
+
+비트맵 가속 (Bitmap Acceleration): 모든 에셋은 하드웨어 가속(WebGL)이 가능한 비트맵 형태(PNG, WebP)로 관리되며, 실시간 렌더링 시점에 CPU 자원을 소모하는 벡터 래스터화 연산의 진입을 원천 차단한다.
+
+5. 단계별 고도화 로드맵 (Phase 1 ~ Phase 4)
+Phase 1 (MVP 단계): 결정론적 타임라인 + 아핀 변환(SRT) 엔진 + 오프라인 웹 플레이어 + 로컬 JSON 익스포트 메이커 구축. 작가가 지정한 일정한 시간을 따라 파츠들이 완벽히 동기화되어 구동되는 시스템 완성.
+
+Phase 2 (본 이징 및 수치 최적화): 수학적 이징 함수(Cubic-Bezier, Elastic, Bounce 등) 보간 연산 고도화 및 고화질 비트맵 스프라이트의 Squash & Stretch 연산 안정화.
+
+Phase 3 (인터랙션 및 이벤트 레이어): 타임라인 내 특정 프레임에 작가가 커스텀 트리거(사운드 재생, 외부 링크 연동, 다른 애니메이션 상태로의 블렌딩 전이)를 임의로 심을 수 있는 이벤트 키프레임 시스템 통합.
+
+Phase 4 (고해상도 미디어 익스포터): 브라우저 화면 녹화 방식이 아닌, 타임라인 데이터를 프레임 단위(Frame-by-Frame)로 무손실 이미지 시퀀스로 추출한 뒤 비디오 파일로 병합하는 Headless 렌더링 파이프라인 구축.

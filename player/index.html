@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2D Skeletal Animation Player Sandbox</title>
+  <link rel="stylesheet" href="./css/player.css">
+</head>
+<body>
+
+  <!-- 마스터 수직 적층 컨테이너 -->
+  <div class="player-container">
+    
+    <!-- 1. 상단 헤더 영역 (Exclude Area 1) -->
+    <header class="player-header">
+      <h1 class="player-title">Inkinno Animate2D</h1>
+      <button id="btn-reset" class="reset-button">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+        </svg>
+        Reset Store
+      </button>
+    </header>
+
+    <!-- 2. 중앙 WebGL 캔버스 뷰포트 (Canvas Dynamic Injection) -->
+    <main class="canvas-viewport-area" id="canvas-viewport-container">
+      <!-- 이 영역 내부로 Canvas가 동적 주입됩니다. -->
+    </main>
+
+    <!-- 3. 중앙 대화 텍스트 및 선택지 판넬 (Exclude Area 2) -->
+    <section class="dialog-panel">
+      <p class="dialog-text">
+        2D 뼈대 애니메이션 엔진이 100% 브라우저 하드웨어 가속을 획득하여 초당 60fps 무손실 재생 중입니다. 마우스 휠 스크롤 또는 모바일 화면 스크러빙으로 타임라인을 정밀 제어할 수 있습니다.
+      </p>
+      <div class="choices-container">
+        <button id="choice-play" class="choice-btn">▶ 애니메이션 자동 재생 (Play Mode)</button>
+        <button id="choice-pause" class="choice-btn">⏸ 재생 일시정지 및 스크롤 프리뷰 (Pause/Scrub Mode)</button>
+      </div>
+    </section>
+
+    <!-- 4. 최하단 광고/배너 스페이스 (Exclude Area 3) -->
+    <footer class="ads-banner">
+      SIMULATED ADVERTISEMENT AREA
+    </footer>
+
+  </div>
+
+  <!-- 비동기 ESM 모듈 바인딩 및 구동 개시 -->
+  <script type="module">
+    import { AnimationPlayer } from './app.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const containerId = 'canvas-viewport-container';
+      const schemaPath = '../shared/demo-schema.json';
+
+      try {
+        // 플레이어 애플리케이션 초기화 및 가동
+        const player = new AnimationPlayer(containerId, schemaPath);
+        await player.start();
+
+        // 수동 버튼 이벤트 바인딩
+        const btnReset = document.getElementById('btn-reset');
+        btnReset.addEventListener('click', () => {
+          if (confirm('모든 로컬 세이브 및 스냅샷 데이터를 초기화하고 처음 상태로 복구하시겠습니까?')) {
+            player.destroy();
+            localStorage.clear(); // 전체 클리어
+            window.location.reload();
+          }
+        });
+
+        // 재생/일시정지 수동 바인딩
+        const btnPlay = document.getElementById('choice-play');
+        const btnPause = document.getElementById('choice-pause');
+
+        btnPlay.addEventListener('click', () => {
+          player.controller.play();
+          player.optimizer.setIdle(false);
+        });
+
+        btnPause.addEventListener('click', () => {
+          player.controller.pause();
+          player.optimizer.setIdle(true);
+        });
+
+      } catch (err) {
+        console.error('[Sandbox Initializer] 플레이어 초기화 중 심각한 실패:', err);
+      }
+    });
+  </script>
+</body>
+</html>

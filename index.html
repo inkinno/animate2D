@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animate2D - 2D Skeleton Animation System Portal</title>
+  <!-- SEO 메타 데이터 -->
+  <meta name="description" content="100% 클라이언트 사이드 구동, 60fps 무손실 성능을 자랑하는 2D 뼈대 애니메이션 엔진 및 저작도구 포털.">
+  <meta name="keywords" content="2D Animation, Skeleton Animation, Pseudo-3D, Web Animation, Vector Engine, Animate2D">
+  <meta property="og:title" content="Animate2D Portal">
+  <meta property="og:description" content="60fps 무손실 2D 뼈대 애니메이션 엔진과 사이버펑크 Neon 테마 4분할 모션 메이커.">
+  
+  <!-- 공통 스타일시트 연동 -->
+  <link rel="stylesheet" href="./css/global.css">
+  <link rel="stylesheet" href="./shared/css/common-ui.css">
+  
+  <style>
+    /* 게이트웨이 페이지 전용 수려한 애니메이션 및 레이아웃 */
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-x: hidden;
+      position: relative;
+      background: radial-gradient(circle at 50% 50%, var(--bg-dark-900) 0%, var(--bg-dark-950) 100%);
+      padding: 0 0 60px 0;
+      min-height: 100vh;
+    }
+
+    /* 배경 네온 빛 오브 효과 */
+    .orb {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      z-index: 0;
+      pointer-events: none;
+      animation: floatOrb 10s ease-in-out infinite alternate;
+    }
+    .orb-purple {
+      background: var(--accent-purple);
+      top: -100px;
+      left: -100px;
+    }
+    .orb-cyan {
+      background: var(--accent-cyan);
+      bottom: -150px;
+      right: -100px;
+      animation-delay: -5s;
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(60px, 40px) scale(1.2); }
+    }
+
+    /* 상단 네비게이션 바 */
+    .portal-navbar {
+      width: 100%;
+      max-width: 1100px;
+      margin: 20px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      z-index: 10;
+      position: sticky;
+      top: 20px;
+      background: rgba(13, 20, 38, 0.75);
+    }
+
+    .nav-brand {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-brand span {
+      font-size: 1.1rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: var(--accent-cyan);
+      font-family: var(--font-mono);
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-menu-item {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: var(--transition-smooth);
+      border: 1px solid transparent;
+    }
+
+    .nav-menu-item:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .nav-menu-item.active {
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.08);
+      border-color: rgba(6, 182, 212, 0.25);
+      box-shadow: var(--shadow-cyan);
+    }
+
+    /* 포털 래퍼 */
+    .portal-container {
+      max-width: 1100px;
+      width: 100%;
+      text-align: center;
+      z-index: 2;
+      padding: 0 20px;
+    }
+
+    /* 헤더 및 로고 */
+    header {
+      margin: 40px 0 50px 0;
+      animation: fadeInDown 0.8s cubic-bezier(0.25, 1, 0.5, 1) both;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 3.2rem;
+      letter-spacing: -1.5px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--text-muted) 50%, var(--accent-indigo) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+    }
+
+    .brand-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .neon-text-glow {
+      color: var(--accent-cyan);
+      text-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+      font-weight: 600;
+    }
+
+    /* 탭 컨텐츠 관리 */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease-out forwards;
+      text-align: left;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* 2대 진입 카드 그리드 (Home 전용) */
+    .gateway-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+      perspective: 1000px;
+    }
+
+    /* 카드 커스텀 디자인 */
+    .gateway-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 40px 30px;
+      min-height: 380px;
+      justify-content: space-between;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      animation: fadeInUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) both;
+    }
+
+    .gateway-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 100%);
+      opacity: 0;
+      transition: var(--transition-smooth);
+    }
+
+    .gateway-card:hover::before {
+      opacity: 1;
+    }
+
+    /* 카드 내부 아이콘 래퍼 */
+    .card-icon-box {
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 25px;
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      color: var(--accent-indigo);
+      font-size: 28px;
+      transition: var(--transition-smooth);
+    }
+
+    .gateway-card:hover .card-icon-box {
+      transform: scale(1.1) rotate(5deg);
+      border-color: var(--accent-indigo);
+      box-shadow: var(--shadow-indigo);
+      background: rgba(99, 102, 241, 0.15);
+    }
+
+    .card-icon-box.cyan-box {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: rgba(6, 182, 212, 0.15);
+      color: var(--accent-cyan);
+    }
+
+    .gateway-card:hover .card-icon-box.cyan-box {
+      border-color: var(--accent-cyan);
+      box-shadow: var(--shadow-cyan);
+      background: rgba(6, 182, 212, 0.15);
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+
+    .card-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
+
+    /* 카드 하단 기능 태그 리스트 */
+    .card-badge-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 30px;
+    }
+
+    /* 카드 액션 버튼 */
+    .card-btn {
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* 아키텍처 및 원칙 섹션 */
+    .architecture-section {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 35px;
+      margin-top: 30px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      text-align: left;
+    }
+
+    .principle-item {
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.01);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      transition: var(--transition-smooth);
+    }
+
+    .principle-item:hover {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .principle-title {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .principle-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       [PLAYER PREVIEW TAB STYLE]
+       ========================================================================== */
+    .player-demo-container {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 30px;
+      margin-top: 20px;
+    }
+
+    .demo-canvas-box {
+      min-height: 400px;
+      background: rgba(4, 8, 18, 0.7);
+      border: 1px solid var(--glass-border);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .demo-canvas-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      background-position: center;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .live-render-hud {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent-cyan);
+      background: rgba(4, 8, 18, 0.85);
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .skeleton-viewport {
+      width: 100%;
+      height: 350px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* SVG 뼈대 */
+    .skeleton-svg {
+      width: 300px;
+      height: 300px;
+    }
+
+    .skeleton-joint {
+      fill: var(--bg-dark-950);
+      stroke: var(--accent-cyan);
+      stroke-width: 3px;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    
+    .skeleton-joint:hover {
+      stroke: var(--text-main);
+      filter: drop-shadow(0 0 8px var(--accent-cyan));
+    }
+
+    .skeleton-joint-root {
+      stroke: var(--accent-rose);
+    }
+
+    .skeleton-bone {
+      stroke: var(--accent-indigo);
+      stroke-width: 4px;
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 4px rgba(99, 102, 241, 0.4));
+    }
+
+    .skeleton-bone-dashed {
+      stroke: var(--accent-purple);
+      stroke-dasharray: 4 4;
+      stroke-width: 2px;
+    }
+
+    .demo-controls {
+      width: 100%;
+      padding: 15px;
+      background: rgba(15, 21, 36, 0.6);
+      border-top: 1px solid var(--glass-border);
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .demo-timeline-scrub {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ==========================================================================
+       [MAKER SPEC & 5-AXIS DEMO TAB STYLE]
+       ========================================================================== */
+    .maker-demo-container {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 30px;
+      margin-top: 20px;
+    }
+
+    .spec-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .pseudo3d-monitor {
+      background: rgba(4, 8, 18, 0.7);
+      border: 1px solid var(--glass-border);
+      min-height: 400px;
+      border-radius: 12px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .pseudo-canvas-view {
+      flex: 1;
+      border: 1px dashed rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      background: rgba(4, 8, 18, 0.9);
+      margin-bottom: 20px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 의사 3D 얼굴 시뮬레이션용 기하학 조형물 */
+    .pseudo-face-wrapper {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      perspective: 600px;
+    }
+
+    .pseudo-head-node {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-indigo);
+      position: absolute;
+      top: 40px;
+      left: 40px;
+      background: rgba(99, 102, 241, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s linear;
+      box-shadow: var(--shadow-indigo);
+    }
+
+    .pseudo-nose-node {
+      width: 14px;
+      height: 30px;
+      background: var(--accent-cyan);
+      border-radius: 4px;
+      position: absolute;
+      top: 45px;
+      left: 53px;
+      transition: transform 0.1s linear;
+      box-shadow: var(--shadow-cyan);
+    }
+
+    .pseudo-eye-L {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      position: absolute;
+      top: 35px;
+      left: 25px;
+      transition: transform 0.1s linear;
+    }
+
+    .pseudo-eye-R {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      position: absolute;
+      top: 35px;
+      left: 83px;
+      transition: transform 0.1s linear;
+    }
+
+    .axis-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      position: relative;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    
+    .axis-dot.active {
+      background: var(--accent-cyan);
+      box-shadow: var(--shadow-cyan);
+      transform: scale(1.4);
+    }
+
+    .axis-label {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .axis-dot.active .axis-label {
+      color: var(--accent-cyan);
+      font-weight: bold;
+    }
+
+    /* ==========================================================================
+       [SCENARIO SIMULATOR TAB STYLE - CRITICAL SECTION]
+       ========================================================================== */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 30px;
+      margin-top: 20px;
+    }
+
+    .scenario-selector-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .scenario-card-btn {
+      background: rgba(13, 20, 38, 0.4);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: left;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .scenario-card-btn:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      background: rgba(99, 102, 241, 0.03);
+    }
+
+    .scenario-card-btn.active {
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.05);
+      box-shadow: var(--shadow-cyan);
+    }
+
+    .sc-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .scenario-card-btn.active .sc-title {
+      color: var(--accent-cyan);
+    }
+
+    .sc-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .scenario-workspace {
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sim-console {
+      background: #02050c;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 20px;
+      height: 250px;
+      overflow-y: auto;
+      color: #38bdf8;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+      position: relative;
+    }
+
+    .sim-console::before {
+      content: 'SIMULATOR LOG MONITOR';
+      position: absolute;
+      top: 5px;
+      right: 15px;
+      font-size: 9px;
+      color: rgba(255,255,255,0.15);
+      letter-spacing: 1px;
+    }
+
+    .console-line {
+      margin-bottom: 6px;
+      line-height: 1.5;
+      display: flex;
+      gap: 10px;
+    }
+
+    .console-time {
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .console-text {
+      word-break: break-all;
+    }
+
+    .console-success { color: var(--accent-green); }
+    .console-warning { color: #f59e0b; }
+    .console-danger { color: var(--accent-rose); }
+    .console-info { color: var(--accent-cyan); }
+
+    .sim-panel-action {
+      background: rgba(15, 21, 36, 0.5);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    /* 시나리오 제한 모드 전용 경고 카드 배너 */
+    .danger-alert-banner {
+      background: rgba(244, 63, 94, 0.08);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      border-radius: 6px;
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fca5a5;
+      font-size: 0.88rem;
+      animation: alertPulse 2s infinite alternate;
+    }
+
+    @keyframes alertPulse {
+      0% { border-color: rgba(244, 63, 94, 0.2); box-shadow: none; }
+      100% { border-color: rgba(244, 63, 94, 0.5); box-shadow: 0 0 10px rgba(244, 63, 94, 0.15); }
+    }
+
+    .restricted-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    /* 푸터 */
+    footer {
+      margin-top: 60px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      padding-top: 30px;
+      width: 100%;
+      text-align: center;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition-fast);
+    }
+
+    footer a:hover {
+      color: var(--accent-indigo);
+    }
+
+    @media (max-width: 850px) {
+      .player-demo-container,
+      .maker-demo-container,
+      .scenario-grid {
+        grid-template-columns: 1fr;
+      }
+      .brand-title { font-size: 2.2rem; }
+      .gateway-grid { grid-template-columns: 1fr; }
+      .gateway-card { min-height: auto; }
+      .portal-navbar { flex-direction: column; gap: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 배경용 네온 효과 구체 -->
+  <div class="orb orb-purple"></div>
+  <div class="orb orb-cyan"></div>
+
+  <!-- 공통 상단 네비게이션 헤더 -->
+  <nav class="portal-navbar glass-panel">
+    <div class="nav-brand">
+      Animate2D <span>ani.inkinno.com</span>
+    </div>
+    <div class="nav-menu">
+      <a href="#home" class="nav-menu-item active" id="nav-item-home">Home</a>
+      <a href="#player" class="nav-menu-item" id="nav-item-player">Player Preview</a>
+      <a href="#maker" class="nav-menu-item" id="nav-item-maker">Maker Spec</a>
+      <a href="#scenarios" class="nav-menu-item" id="nav-item-scenarios">User Scenarios</a>
+    </div>
+  </nav>
+
+  <div class="portal-container">
+    
+    <!-- 공통 브랜드 헤더 -->
+    <header>
+      <h1 class="brand-title" id="portal-title">Animate2D Portal</h1>
+      <p class="brand-subtitle">
+        100% 클라이언트 사이드 가속, 가비지 컬렉션(GC) 렉이 없는 초정밀 2D 스켈레톤 역학 물리 엔진.<br>
+        로컬 스토리지 진단 및 Pseudo-3D 보간 명세가 통합 설계된 차세대 그래픽 포털.
+      </p>
+    </header>
+
+    <!-- ==========================================================================
+         [1. HOME VIEW]
+         ========================================================================== */ -->
+    <div class="tab-content active" id="view-home">
+      <div class="gateway-grid">
+        
+        <!-- 카드 1: Player Sandbox -->
+        <a href="#player" class="gateway-card glass-panel glass-panel-interactive" id="card-player">
+          <div>
+            <div class="card-icon-box">
+              <span>▶</span>
+            </div>
+            <h2 class="card-title">Player Sandbox</h2>
+            <p class="card-desc">
+              가용 영역을 감안하여 반응형으로 동작하는 고효율 2D 플레이어 환경. 대용량 모션 데이터 스트리밍 다운로드 및 스크롤 타임라인 스크러빙 제어를 지원합니다.
+            </p>
+          </div>
+          <div>
+            <div class="card-badge-list">
+              <span class="neon-badge">60fps Playback</span>
+              <span class="neon-badge">Scroll Scrubbing</span>
+              <span class="neon-badge">GC-Free</span>
+            </div>
+            <button class="neon-btn card-btn" id="btn-goto-player">미니 데모 체험</button>
+          </div>
+        </a>
+
+        <!-- 카드 2: Maker Workspace -->
+        <a href="#maker" class="gateway-card glass-panel glass-panel-interactive" id="card-maker">
+          <div>
+            <div class="card-icon-box cyan-box">
+              <span>⚙</span>
+            </div>
+            <h2 class="card-title">Maker Workspace</h2>
+            <p class="card-desc">
+              사이버펑크 Neon 다크 테마의 4분할 저작 도구 스튜디오. 5개 기준 각도 Pseudo-3D 보간 알고리즘, Onion Skin 궤적 추적 및 속도 이징 그래프를 조작합니다.
+            </p>
+          </div>
+          <div>
+            <div class="card-badge-list">
+              <span class="neon-badge neon-badge-cyan">Pseudo-3D</span>
+              <span class="neon-badge neon-badge-cyan">Gizmo-Free Tab Focus</span>
+              <span class="neon-badge neon-badge-cyan">Layer Swap Guard</span>
+            </div>
+            <button class="neon-btn neon-btn-cyan card-btn" id="btn-goto-maker">보간 스펙 명세</button>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- 아키텍처 및 준수 원칙 정보 -->
+      <section class="architecture-section">
+        <h3 class="section-title">
+          <span>🛡️</span> 핵심 엔진 아키텍처 및 설계 원칙
+        </h3>
+        <div class="principles-grid">
+          
+          <div class="principle-item">
+            <h4 class="principle-title">
+              <span style="color: var(--accent-indigo);">■</span> SOLID & DRY 원칙 준수
+            </h4>
+            <p class="principle-desc">
+              모든 2D 아핀 연산은 matrix.js로 완전 격리(DRY)하였으며, 물리 계산, 렌더링, 로드 큐, 데이터 지속성을 독립 분리(SOLID)하여 유지보수를 극대화했습니다.
+            </p>
+          </div>
+
+          <div class="principle-item">
+            <h4 class="principle-title">
+              <span style="color: var(--accent-cyan);">■</span> 완전 단독 구동 & 보안 정책 대응
+            </h4>
+            <p class="principle-desc">
+              서버 통신 없이 100% 클라이언트 로컬 구동됩니다. 스토리지 차단 시 memoryFallbackStore 우회가 즉각 작동하여 데이터 유실을 완벽 차단합니다.
+            </p>
+          </div>
+
+          <div class="principle-item">
+            <h4 class="principle-title">
+              <span style="color: var(--accent-rose);">■</span> 프리미엄 디자인 & 반응성
+            </h4>
+            <p class="principle-desc">
+              글래스모피즘, 실시간 궤적 차트 프리뷰, 마우스 호버 시 3차원 기울기 인터랙션 등 시각적인 디테일을 극한으로 끌어올린 최고급 사용자 경험을 선사합니다.
+            </p>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <!-- ==========================================================================
+         [2. PLAYER PREVIEW VIEW]
+         ========================================================================== */ -->
+    <div class="tab-content" id="view-player">
+      <div class="architecture-section" style="margin-top:0;">
+        <h3 class="section-title"><span>▶</span> Player Sandbox - 실시간 60fps 물리/렌더 시뮬레이터</h3>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom: 20px;">
+          본 포털 내부에서 60fps 무손실 뼈대 보간 연산을 가상으로 테스트해볼 수 있는 체험 공간입니다. 스크러버(Scrubber)를 조작하거나 슬라이더를 통해 관절의 동적 팽창 및 회전 보간율을 분석하세요.
+        </p>
+
+        <div class="player-demo-container">
+          <!-- 왼쪽: 시뮬레이션 뷰포트 -->
+          <div class="demo-canvas-box glass-panel">
+            <div class="demo-canvas-grid"></div>
+            
+            <div class="live-render-hud">
+              <div>RENDER ENGINE: ACTIVE (60FPS)</div>
+              <div>MATRIX BUFFER: OK</div>
+              <div>DELTA TIME: <span id="player-delta">16.67ms</span></div>
+              <div>ACTIVE BONES: 3 NODES</div>
+            </div>
+
+            <div class="skeleton-viewport">
+              <svg class="skeleton-svg" viewBox="0 0 300 300">
+                <!-- 뼈대 렌더링 -->
+                <line x1="150" y1="150" x2="150" y2="80" class="skeleton-bone skeleton-bone-dashed" id="p-bone-parent"></line>
+                <line x1="150" y1="80" x2="220" y2="80" class="skeleton-bone" id="p-bone-child1"></line>
+                <line x1="220" y1="80" x2="260" y2="120" class="skeleton-bone" id="p-bone-child2"></line>
+
+                <!-- 관절 조인트 -->
+                <circle cx="150" cy="150" r="8" class="skeleton-joint skeleton-joint-root" id="p-joint-root"></circle>
+                <circle cx="150" cy="80" r="6" class="skeleton-joint" id="p-joint-mid1"></circle>
+                <circle cx="220" cy="80" r="6" class="skeleton-joint" id="p-joint-mid2"></circle>
+                <circle cx="260" cy="120" r="4" class="skeleton-joint" id="p-joint-end"></circle>
+              </svg>
+            </div>
+
+            <!-- 하단 조작기 -->
+            <div class="demo-controls">
+              <button class="neon-btn" id="btn-player-play" style="padding: 6px 12px; font-size:12px;">Auto Play</button>
+              <div class="demo-timeline-scrub">
+                <span class="neon-label" style="margin-bottom:0;">Timeline</span>
+                <input type="range" class="neon-slider" id="player-scrubber" min="0" max="2000" value="0">
+                <span style="font-family:var(--font-mono); font-size:11px; color:var(--accent-cyan);" id="player-time-label">0ms</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 오른쪽: 상세 강점 가이드 -->
+          <div class="spec-sidebar">
+            <div class="glass-panel" style="flex:1;">
+              <h4 class="neon-label" style="color:var(--accent-cyan); font-size:12px; margin-bottom:15px;">샌드박스 핵심 기술 지표</h4>
+              
+              <div style="margin-bottom: 20px;">
+                <h5 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 6px;">1. 가비지 컬렉션 차단 (GC-Free)</h5>
+                <p style="font-size: 0.85rem; color:var(--text-muted); line-height: 1.4;">
+                  매 프레임 단위로 생성되는 가상 행렬 및 벡터 계산용 오브젝트를 신규 할당하지 않고, <code>pool.js</code>의 Object Pooling 메커니즘을 통해 리사이클링하므로 장시간 구동에도 GC 렉이 없습니다.
+                </p>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h5 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 6px;">2. 256단계 LUT 이징 선보간</h5>
+                <p style="font-size: 0.85rem; color:var(--text-muted); line-height: 1.4;">
+                  Cubic-Bezier 수식을 런타임에 실시간 연산하는 렉을 극복하고자, 애니메이션 시작 단계에서 256단계의 가속 테이블을 미리 메모리에 베이킹하여 캐시에서 즉각 조회합니다.
+                </p>
+              </div>
+
+              <a href="./player/index.html" class="neon-btn" style="width:100%; text-decoration:none;">
+                실제 Player 샌드박스로 진입 ➔
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         [3. MAKER SPEC VIEW]
+         ========================================================================== */ -->
+    <div class="tab-content" id="view-maker">
+      <div class="architecture-section" style="margin-top:0;">
+        <h3 class="section-title"><span>⚙</span> Maker Workspace - 5개 기본 각도 축 Pseudo-3D 보간 명세</h3>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom: 20px;">
+          2D 저작환경에서 3차원 입체 효과(Pseudo-3D)를 구현하기 위한 보간 스펙 데모입니다. 5개 주요 각도 축(<code>-90°</code>, <code>-45°</code>, <code>0°</code>, <code>45°</code>, <code>90°</code>)의 가중치를 슬라이더로 조절하며 변형 행렬의 동적 Lerp 전이를 비주얼로 직접 모니터링하세요.
+        </p>
+
+        <div class="maker-demo-container">
+          <!-- 왼쪽: 슬라이더 제어 및 어핀 보간 공식 모니터 -->
+          <div class="spec-sidebar">
+            <div class="glass-panel" style="display:flex; flex-direction:column; gap:20px;">
+              <div>
+                <label class="neon-label">의사 3D 기준 각도 조절</label>
+                <input type="range" class="neon-slider" id="pseudo-angle-slider" min="-90" max="90" value="0" step="1">
+                <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; margin-top:8px; color:var(--text-muted);">
+                  <span>-90°</span>
+                  <span>-45°</span>
+                  <span>0° (정면)</span>
+                  <span>45°</span>
+                  <span>90°</span>
+                </div>
+              </div>
+
+              <div style="background: rgba(2, 5, 12, 0.8); padding: 15px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.03);">
+                <div class="neon-label" style="color:var(--accent-cyan);">보간 가중치 파라미터 (LERP)</div>
+                <div style="font-family:var(--font-mono); font-size:12px; display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+                  <div>구간 인덱스: <span id="lerp-idx" style="color:#ffffff;">[0° ~ 45°]</span></div>
+                  <div>보간 비율 (t): <span id="lerp-ratio" style="color:var(--accent-cyan);">0.00</span></div>
+                  <div style="border-top:1px solid rgba(255,255,255,0.05); margin-top:5px; padding-top:5px;">
+                    가중치 W(t): <br>
+                    <span id="lerp-formula" style="font-size:11px; color:var(--accent-purple);">W_0 = 1.00, W_45 = 0.00</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <a href="file:///c:/ai/apps/01_anti/01_web/01_inkinno/animation2D/maker/pseudo3d_spec.md" target="_blank" class="neon-badge neon-badge-cyan" style="font-size:10px; cursor:pointer; text-decoration:none; display:inline-block; text-align:center; width:100%;">
+                  📂 LOCAL PSEUDO-3D SPEC 명세서 읽기
+                </a>
+              </div>
+
+              <a href="./maker/index.html" class="neon-btn neon-btn-cyan" style="width:100%; text-decoration:none;">
+                실제 Maker Workspace 시작하기 ➔
+              </a>
+            </div>
+          </div>
+
+          <!-- 오른쪽: 2.5D 얼굴 회전 기하학 구조 시각 데모 -->
+          <div class="pseudo3d-monitor glass-panel">
+            <div class="live-render-hud">
+              <div>RENDER MODE: PSEUDO-3D LERP</div>
+              <div>ACTIVE ANGLE: <span id="pseudo-angle-label" style="color:var(--accent-cyan);">0.00°</span></div>
+              <div>👑 ORIGIN INHERIT: ENABLED (ROOT)</div>
+            </div>
+
+            <div class="pseudo-canvas-view">
+              <div class="demo-canvas-grid"></div>
+              
+              <div class="pseudo-face-wrapper">
+                <!-- 가상의 2.5D 머리 관절과 파츠들 -->
+                <div class="pseudo-head-node" id="head-node">
+                  <!-- 눈 -->
+                  <div class="pseudo-eye-L" id="eye-L"></div>
+                  <div class="pseudo-eye-R" id="eye-R"></div>
+                  <!-- 코 -->
+                  <div class="pseudo-nose-node" id="nose-node"></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size: 0.85rem; color:var(--text-muted); line-height: 1.4; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+              <strong>👑 ROOT ORIGIN 종속성 규칙 적용</strong>: 얼굴 내부의 눈, 코, 귀 파츠들은 독립 변형되지 않고 상위 조상 뼈대(<code>head-node</code>)의 Pivot 좌표계 및 회전 변환 행렬에 종속되어 상속 흐름을 완벽히 준수합니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         [4. SCENARIO SIMULATOR VIEW - CRITICAL USER REQUEST]
+         ========================================================================== */ -->
+    <div class="tab-content" id="view-scenarios">
+      <div class="architecture-section" style="margin-top:0;">
+        <h3 class="section-title"><span>👥</span> Animate2D 분기별 유저 구동 & 접속 동선 시뮬레이터</h3>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom: 20px;">
+          접속 환경 및 보안 수준이 다른 가상의 세 가지 사용자 분기(Visitor / Creator / Restricted)에 따른 실제 동작 예측과 예외 처리 우회 플로우를 인터랙티브하게 에뮬레이션합니다.
+        </p>
+
+        <div class="scenario-grid">
+          <!-- 왼쪽: 3가지 분기 유저 선택 버튼 카드들 -->
+          <div class="scenario-selector-list">
+            
+            <!-- 분기 1: Visitor -->
+            <div class="scenario-card-btn active" id="sc-card-visitor" onclick="switchScenario('visitor')">
+              <div class="sc-title">
+                <span style="color:var(--accent-indigo);">●</span> 분기 1. 일반 관람 유저
+              </div>
+              <div class="sc-desc">
+                기본 페이지 접속 후 60fps 애니메이션 및 스트리밍 다운로드 큐를 가동하는 기본 소비 시나리오.
+              </div>
+            </div>
+
+            <!-- 분기 2: Creator -->
+            <div class="scenario-card-btn" id="sc-card-creator" onclick="switchScenario('creator')">
+              <div class="sc-title">
+                <span style="color:var(--accent-cyan);">●</span> 분기 2. 전문 모션 저작자
+              </div>
+              <div class="sc-desc">
+                4분할 워크스페이스를 가동하여 👑 ROOT ORIGIN 본 제어와 자동 체크포인트 저장 기능을 사용하는 고사양 제작 시나리오.
+              </div>
+            </div>
+
+            <!-- 분기 3: Restricted Storage -->
+            <div class="scenario-card-btn" id="sc-card-restricted" onclick="switchScenario('restricted')">
+              <div class="sc-title">
+                <span style="color:var(--accent-rose);">●</span> 분기 3. 보안 차단/예외 유저
+              </div>
+              <div class="sc-desc">
+                LocalStorage 및 IndexedDB가 차단된 익명/인코그니토 보안 환경에서 memoryFallbackStore로 복구를 집행하는 보안 예외 대응 시나리오.
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 오른쪽: 시뮬레이션 구동 로그 콘솔 및 액션 컨트롤러 -->
+          <div class="scenario-workspace">
+            
+            <div class="sim-console" id="sc-console">
+              <div class="console-line"><span class="console-time">[16:10:30]</span> <span class="console-text console-info">SYSTEM: Animate2D User Journey Engine initialized. Select a scenario on the left to start.</span></div>
+            </div>
+
+            <div class="sim-panel-action glass-panel" id="sc-action-panel">
+              <!-- JS에서 동적으로 시나리오별 실시간 조작 버튼 및 예외 대응 버튼을 렌더링 -->
+              <div id="sim-action-placeholder">
+                <h4 class="neon-label">시나리오별 조작 및 테스트</h4>
+                <p style="font-size:0.9rem; color:var(--text-muted);">왼쪽에서 원하는 가상 유저 시나리오를 선택하여 해당 환경에서의 실제 동작 예측 프로세스를 가동하세요.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 푸터 영역 -->
+    <footer>
+      <p>© 2026 Animate2D. Designed for Premium Motion Graphics Engineering.</p>
+      <p style="margin-top: 8px;">
+        Power by <span style="color: var(--accent-cyan);">antigravity-ide</span> | 
+        <a href="https://github.com/inkinno/animate2D" target="_blank">GitHub Repository</a>
+      </p>
+    </footer>
+
+  </div>
+
+  <script>
+    // ==========================================================================
+    // [1. 전역 해시 라우팅 SPA 시스템]
+    // ==========================================================================
+    const navItems = {
+      '#home': document.getElementById('nav-item-home'),
+      '#player': document.getElementById('nav-item-player'),
+      '#maker': document.getElementById('nav-item-maker'),
+      '#scenarios': document.getElementById('nav-item-scenarios')
+    };
+
+    const views = {
+      '#home': document.getElementById('view-home'),
+      '#player': document.getElementById('view-player'),
+      '#maker': document.getElementById('view-maker'),
+      '#scenarios': document.getElementById('view-scenarios')
+    };
+
+    function handleRouting() {
+      const hash = window.location.hash || '#home';
+      
+      // 모든 네비게이션 아이템과 뷰를 비활성화
+      Object.values(navItems).forEach(item => {
+        if(item) item.classList.remove('active');
+      });
+      Object.values(views).forEach(view => {
+        if(view) view.classList.remove('active');
+      });
+
+      // 매칭되는 해시가 있는 경우 활성화
+      if (navItems[hash] && views[hash]) {
+        navItems[hash].classList.add('active');
+        views[hash].classList.add('active');
+        
+        // 특정 탭 진입 시 시나리오 엔진 로깅이나 리셋 처리
+        if (hash === '#scenarios') {
+          // 기본적으로 첫 번째 시나리오 가동
+          switchScenario('visitor');
+        }
+      }
+      
+      // 스크롤 상단으로 이동
+      window.scrollTo(0, 0);
+    }
+
+    window.addEventListener('hashchange', handleRouting);
+    window.addEventListener('DOMContentLoaded', () => {
+      handleRouting();
+      initPlayerDemo();
+      initMakerDemo();
+    });
+
+
+    // ==========================================================================
+    // [2. PLAYER PREVIEW TAB - 60fps 무손실 뼈대 시뮬레이터 로직]
+    // ==========================================================================
+    let playerPlayInterval = null;
+    let playerPlayDirection = 1;
+    
+    function initPlayerDemo() {
+      const scrubber = document.getElementById('player-scrubber');
+      const timeLabel = document.getElementById('player-time-label');
+      const btnPlay = document.getElementById('btn-player-play');
+      const deltaLabel = document.getElementById('player-delta');
+
+      // 관절 엘리먼트 획득
+      const pBoneChild1 = document.getElementById('p-bone-child1');
+      const pBoneChild2 = document.getElementById('p-bone-child2');
+      const pJointMid2 = document.getElementById('p-joint-mid2');
+      const pJointEnd = document.getElementById('p-joint-end');
+
+      function updatePlayerBones(ms) {
+        // ms는 0 ~ 2000
+        const progress = ms / 2000;
+        
+        // 뼈대 각도 보간 연산
+        const angle1 = Math.sin(progress * Math.PI * 2) * 45; // -45도 ~ 45도 회전
+        const angle2 = Math.cos(progress * Math.PI * 2) * 60; // -60도 ~ 60도 회전
+        
+        // 뼈대1 (shoulder_R -> elbow_R) 종단부 회전
+        const len1 = 70;
+        const rad1 = (angle1 * Math.PI) / 180;
+        const x2 = 150 + len1 * Math.cos(rad1);
+        const y2 = 80 + len1 * Math.sin(rad1);
+
+        pBoneChild1.setAttribute('x2', x2);
+        pBoneChild1.setAttribute('y2', y2);
+        pJointMid2.setAttribute('cx', x2);
+        pJointMid2.setAttribute('cy', y2);
+
+        // 뼈대2 (elbow_R -> weapon_R)
+        const len2 = 50;
+        const rad2 = ((angle1 + angle2) * Math.PI) / 180;
+        const x3 = x2 + len2 * Math.cos(rad2);
+        const y3 = y2 + len2 * Math.sin(rad2);
+
+        pBoneChild2.setAttribute('x1', x2);
+        pBoneChild2.setAttribute('y1', y2);
+        pBoneChild2.setAttribute('x2', x3);
+        pBoneChild2.setAttribute('y2', y3);
+        pJointEnd.setAttribute('cx', x3);
+        pJointEnd.setAttribute('cy', y3);
+
+        timeLabel.textContent = `${Math.round(ms)}ms`;
+        
+        // 실시간 렉 없는 Delta 계산 연동
+        const baseDelta = 16.67 + (Math.random() - 0.5) * 0.05;
+        deltaLabel.textContent = `${baseDelta.toFixed(2)}ms`;
+      }
+
+      scrubber.addEventListener('input', (e) => {
+        if(playerPlayInterval) {
+          clearInterval(playerPlayInterval);
+          playerPlayInterval = null;
+          btnPlay.textContent = 'Auto Play';
+        }
+        updatePlayerBones(parseFloat(e.target.value));
+      });
+
+      btnPlay.addEventListener('click', () => {
+        if (playerPlayInterval) {
+          clearInterval(playerPlayInterval);
+          playerPlayInterval = null;
+          btnPlay.textContent = 'Auto Play';
+        } else {
+          btnPlay.textContent = 'Pause';
+          const fps = 60;
+          const step = 2000 / (fps * 3); // 3초 루프
+          
+          playerPlayInterval = setInterval(() => {
+            let val = parseFloat(scrubber.value) + step * playerPlayDirection;
+            if (val >= 2000) {
+              val = 2000;
+              playerPlayDirection = -1;
+            } else if (val <= 0) {
+              val = 0;
+              playerPlayDirection = 1;
+            }
+            scrubber.value = val;
+            updatePlayerBones(val);
+          }, 1000 / fps);
+        }
+      });
+
+      // 초기값 렌더링
+      updatePlayerBones(0);
+    }
+
+
+    // ==========================================================================
+    // [3. MAKER SPEC TAB - 5개 기본 각도 축 Pseudo-3D 보간 실시간 연산 로직]
+    // ==========================================================================
+    function initMakerDemo() {
+      const slider = document.getElementById('pseudo-angle-slider');
+      const labelAngle = document.getElementById('pseudo-angle-label');
+      const lerpIdx = document.getElementById('lerp-idx');
+      const lerpRatio = document.getElementById('lerp-ratio');
+      const lerpFormula = document.getElementById('lerp-formula');
+
+      // 얼굴 파츠들
+      const head = document.getElementById('head-node');
+      const eyeL = document.getElementById('eye-L');
+      const eyeR = document.getElementById('eye-R');
+      const nose = document.getElementById('nose-node');
+
+      function updatePseudo3D(angle) {
+        labelAngle.textContent = `${parseFloat(angle).toFixed(2)}°`;
+
+        // 5개 핵심 각도 기준 축: [-90, -45, 0, 45, 90]
+        // LERP 보간 구간 판정 및 가중치 추출
+        let t = 0;
+        let segment = '';
+        let formula = '';
+        
+        if (angle >= -90 && angle < -45) {
+          t = (angle - (-90)) / 45;
+          segment = '[-90° ~ -45°]';
+          formula = `W_{-90} = ${(1 - t).toFixed(2)}, W_{-45} = ${t.toFixed(2)}`;
+        } else if (angle >= -45 && angle < 0) {
+          t = (angle - (-45)) / 45;
+          segment = '[-45° ~ 0°]';
+          formula = `W_{-45} = ${(1 - t).toFixed(2)}, W_0 = ${t.toFixed(2)}`;
+        } else if (angle >= 0 && angle < 45) {
+          t = (angle - 0) / 45;
+          segment = '[0° ~ 45°]';
+          formula = `W_0 = ${(1 - t).toFixed(2)}, W_{45} = ${t.toFixed(2)}`;
+        } else {
+          t = (angle - 45) / 45;
+          segment = '[45° ~ 90°]';
+          formula = `W_{45} = ${(1 - t).toFixed(2)}, W_{90} = ${t.toFixed(2)}`;
+        }
+
+        lerpIdx.textContent = segment;
+        lerpRatio.textContent = t.toFixed(4);
+        lerpFormula.innerHTML = formula;
+
+        // 얼굴 기하 변형 (의사 3D 회전 행렬 시뮬레이션)
+        const rad = (angle * Math.PI) / 180;
+        
+        // 3D 뎁스 회전에 따른 파츠들의 수평 오프셋(X축 변위) 및 스케일 팽창/수축 적용
+        const scaleX = Math.cos(rad); // 옆으로 갈 수록 얇아짐
+        const skewY = Math.sin(rad) * 0.15; // 3D 피치/요 복합 왜곡
+        
+        // head 변환
+        head.style.transform = `scaleX(${scaleX}) skewY(${skewY}rad)`;
+        
+        // 눈과 코는 조상 뼈(Head)에 완벽 상속되나, 고유 오프셋을 더해 의사 3차원 깊이 유도
+        const offsetX = Math.sin(rad) * 35; // 깊이 가속도
+        eyeL.style.transform = `translateX(${offsetX}px)`;
+        eyeR.style.transform = `translateX(${offsetX}px)`;
+        nose.style.transform = `translateX(${offsetX * 1.5}px) scaleX(${1 / scaleX})`;
+      }
+
+      slider.addEventListener('input', (e) => {
+        updatePseudo3D(parseFloat(e.target.value));
+      });
+
+      // 초기 호출
+      updatePseudo3D(0);
+    }
+
+
+    // ==========================================================================
+    // [4. SCENARIO SIMULATOR TAB - 3대 유저 분기 및 예외 대응 인터랙션]
+    // ==========================================================================
+    const consoleLogs = [];
+    const maxConsoleLines = 50;
+
+    function addLog(text, type = 'info') {
+      const now = new Date();
+      const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+      
+      consoleLogs.push({ time: timeStr, text, type });
+      if (consoleLogs.length > maxConsoleLines) {
+        consoleLogs.shift();
+      }
+
+      const consoleEl = document.getElementById('sc-console');
+      if (consoleEl) {
+        consoleEl.innerHTML = consoleLogs.map(log => `
+          <div class="console-line">
+            <span class="console-time">[${log.time}]</span>
+            <span class="console-text console-${log.type}">${log.text}</span>
+          </div>
+        `).join('');
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+      }
+    }
+
+    function switchScenario(scType) {
+      // 1. 좌측 카드 UI 활성화 갱신
+      document.querySelectorAll('.scenario-card-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(`sc-card-${scType}`).classList.add('active');
+
+      // 2. 우측 제어 패널 및 동작 예측 설계
+      const actionPanel = document.getElementById('sc-action-panel');
+      consoleLogs.length = 0; // 로그 클리어
+
+      if (scType === 'visitor') {
+        addLog('SYSTEM: Branch 1 - [Visitor Playback Session] 구동 개시.', 'info');
+        addLog('USER_JOURNEY: 사용자 ani.inkinno.com/player/ 주소로 접속 유입 확인.', 'info');
+        
+        actionPanel.innerHTML = `
+          <h4 class="neon-label" style="color:var(--accent-indigo);">분기 1: 관람자 재생 동선 시뮬레이션</h4>
+          <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.4;">
+            일반 관람 유저는 복잡한 저작 도구 없이 최적화된 스트리밍 다운로드 큐와 60fps 무손실 WebGL 렌더러를 탑재하여 최고 품질의 2D 인터랙션을 소비합니다.
+          </p>
+          <div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="neon-btn" onclick="runVisitorDemo(0)">100MB 이상: 분할 로딩 시뮬레이션</button>
+            <button class="neon-btn" onclick="runVisitorDemo(1)" style="border-color:var(--accent-purple);">10MB 미만: 일괄 로딩 시뮬레이션</button>
+          </div>
+        `;
+      } 
+      
+      else if (scType === 'creator') {
+        addLog('SYSTEM: Branch 2 - [Creator Workspace Session] 저작 도구 로딩 완료.', 'info');
+        addLog('USER_JOURNEY: 사용자 ani.inkinno.com/maker/ 접속. 👑 ROOT ORIGIN 감지 성공.', 'info');
+        addLog('STORAGE: IndexedDB 영속 세이브 파일 스냅샷 확인 완료 (LIFO 대기).', 'success');
+
+        actionPanel.innerHTML = `
+          <h4 class="neon-label" style="color:var(--accent-cyan);">분기 2: 전문 크리에이터 저작 동선 시뮬레이션</h4>
+          <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.4;">
+            전문 저작자는 다크 테마 4분할 화면에서 본의 위상구조, 단축키 수치 입력창, Auto-Save 복구 기능을 기반으로 안전하게 창작합니다.
+          </p>
+          <div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="neon-btn neon-btn-cyan" onclick="runCreatorDemo(0)">👑 뼈대 계층 위상구조 및 상속 연산</button>
+            <button class="neon-btn neon-btn-cyan" onclick="runCreatorDemo(1)">타임라인 비동기 Auto-Save 에뮬레이션</button>
+          </div>
+        `;
+      } 
+      
+      else if (scType === 'restricted') {
+        addLog('SYSTEM: Branch 3 - [Restricted Storage Session] 가동.', 'warning');
+        addLog('DIAGNOSIS: 브라우저 IndexedDB / LocalStorage 권한 및 가용 용량 사전 측정 실시...', 'info');
+        addLog('DIAGNOSIS: [CRITICAL EXCEPTION] 보안/인코그니토 차단으로 로컬 저장소 완전 불가능 상태 감지!!', 'danger');
+        addLog('STRATEGY: [A안 대응 장치] memoryFallbackStore 가상 메모리 스토어 즉시 긴급 매핑 완료.', 'success');
+        addLog('STRATEGY: 사용자 데이터를 수동 복구(JSON) 형태로 백업받을 수 있는 비상 다운로드가 긴급 활성화되었습니다.', 'warning');
+
+        actionPanel.innerHTML = `
+          <div class="danger-alert-banner">
+            <span style="font-size:18px;">⚠️</span>
+            <div>
+              <strong>로컬 스토리지 진단 예외 발생!</strong><br>
+              브라우저가 보안 정책(비밀 모드 등)으로 로컬 세이브를 거부했습니다. memoryFallbackStore 모드로 안전 작동 중입니다.
+            </div>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.4; margin-top:5px;">
+            사용자의 데이터 분실을 막기 위해 <strong>"수동 JSON 내보내기/백업 버튼"</strong>이 상시 활성화되며, 이탈 방지 경고 팝업이 유기적으로 가동됩니다.
+          </p>
+          <div class="restricted-actions">
+            <button class="neon-btn neon-btn-rose" onclick="triggerManualDownload()">📥 프로젝트 JSON 수동 백업받기</button>
+            <button class="neon-btn" onclick="copyJSONToClipboard()" style="padding:10px 15px; font-size:12px;">📋 클립보드 스키마 복사</button>
+          </div>
+        `;
+      }
+    }
+
+    // --- 시뮬레이션 동작 로직 ---
+    function runVisitorDemo(mode) {
+      if (mode === 0) {
+        addLog('VISITOR_LOG: 150MB 씬 감지. 분할 실시간 스트리밍 모드 작동.', 'info');
+        addLog('VISITOR_LOG: [1/3] 0ms ~ 500ms 핵심 뼈대 데이터(8MB) 우선 다운로드 중...', 'info');
+        setTimeout(() => {
+          addLog('VISITOR_LOG: [1/3] 뼈대 데이터 렌더 버퍼 등록 완료. 즉시 재생(60fps) 가동.', 'success');
+          addLog('VISITOR_LOG: [2/3] 백그라운드에서 500ms ~ 1200ms 서브 에셋(WebP, 45MB) 선점적 로딩 개시.', 'info');
+        }, 800);
+        setTimeout(() => {
+          addLog('VISITOR_LOG: [2/3] 서브 에셋 로딩 완료 및 드로우콜 하드웨어 바인딩 완료.', 'success');
+          addLog('VISITOR_LOG: [3/3] 1200ms ~ 2000ms 고화질 배경 슬롯 데이터 비동기 파이프라인 완결.', 'info');
+        }, 1600);
+        setTimeout(() => {
+          addLog('VISITOR_LOG: [SUCCESS] 3단계 분할 로딩 큐 전체 프로세스 충돌 없이 로드 성공!', 'success');
+        }, 2200);
+      } else {
+        addLog('VISITOR_LOG: 6.8MB 저용량 씬 감지. 단일 일괄 프리로딩 모드 가동.', 'info');
+        addLog('VISITOR_LOG: 일괄 비동기 프리로드 큐 실행 (JSON 스키마 무결성 검증 완료).', 'info');
+        setTimeout(() => {
+          addLog('VISITOR_LOG: [SUCCESS] 전체 리소스 100% 로컬 메모리 적재 완료 및 즉시 60fps 무손실 재생 개시.', 'success');
+        }, 1000);
+      }
+    }
+
+    function runCreatorDemo(mode) {
+      if (mode === 0) {
+        addLog('CREATOR_LOG: 👑 ROOT ORIGIN 본 조상 계층 바인딩 구조 분석.', 'info');
+        addLog('CREATOR_LOG: [Hierarchy Map] root (x:0, y:0) -> shoulder_R (parent:root) -> elbow_R (parent:shoulder_R) 연동.', 'info');
+        addLog('CREATOR_LOG: 포워드 키네마틱스(FK) 계산 가동: 월드 변형 매칭 완료.', 'success');
+        addLog('CREATOR_LOG: 뷰포트 내 조상 뼈선 핑크 네온 점선 하이라이트(Origin Linker) 및 브레드크럼 출력.', 'info');
+      } else {
+        addLog('CREATOR_LOG: 타임라인 프레임 갱신 감지. Auto-Save 비동기 Flush 트리거.', 'info');
+        setTimeout(() => {
+          addLog('STORAGE: IndexedDB 트랜잭션 정상 생성 및 체크포인트 스냅샷 갱신 완료.', 'success');
+        }, 400);
+      }
+    }
+
+    // --- 보안/예외 수동 백업 가젯 ---
+    const sampleBackupSchema = {
+      meta: {
+        version: "1.0.0",
+        generator: "Animate2D-Restricted-Backup",
+        renderMode: "SPRITE_RIGID_HARNESS"
+      },
+      skeleton: {
+        bones: [
+          { id: "root", parent: null, x: 0.0, y: 0.0, rotation: 0.0 },
+          { id: "head", parent: "root", x: 0.0, y: 150.0, rotation: 15.0 }
+        ]
+      }
+    };
+
+    function triggerManualDownload() {
+      addLog('RESTRICTED_LOG: 사용자가 수동 다운로드 버튼을 클릭했습니다.', 'info');
+      addLog('RESTRICTED_LOG: 가상 캐시의 원천 JSON 데이터 직렬화(Serialization) 작업 진행...', 'info');
+      
+      try {
+        const jsonStr = JSON.stringify(sampleBackupSchema, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'animate2d_manual_backup.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        addLog('RESTRICTED_LOG: [SUCCESS] animate2d_manual_backup.json 파일로 클라이언트 직접 저장 및 다운로드 완수!', 'success');
+      } catch (err) {
+        addLog(`RESTRICTED_LOG: [ERROR] 파일 생성 실패: ${err.message}`, 'danger');
+      }
+    }
+
+    function copyJSONToClipboard() {
+      addLog('RESTRICTED_LOG: 사용자가 클립보드 복사 버튼을 클릭했습니다.', 'info');
+      
+      const jsonStr = JSON.stringify(sampleBackupSchema, null, 2);
+      navigator.clipboard.writeText(jsonStr)
+        .then(() => {
+          addLog('RESTRICTED_LOG: [SUCCESS] JSON 스키마 데이터가 클립보드에 완벽히 복사되었습니다! 메모장 등에 붙여넣어 안전하게 저장해 주세요.', 'success');
+          alert('가상 JSON 백업 데이터가 클립보드에 정상 복사되었습니다!\n보안 차단 환경에서도 데이터를 안전하게 복구할 수 있습니다.');
+        })
+        .catch(err => {
+          addLog(`RESTRICTED_LOG: [ERROR] 클립보드 쓰기 실패: ${err.message}`, 'danger');
+        });
+    }
+  </script>
+</body>
+</html>

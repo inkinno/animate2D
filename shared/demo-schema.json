@@ -1,0 +1,178 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "generator": "2D-Skeletal-Maker",
+    "renderMode": "SPRITE_RIGID_HARNESS"
+  },
+  "library": {
+    "sprites": [
+      {
+        "id": "img_body",
+        "type": "bitmap",
+        "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='140' viewBox='0 0 100 140'><defs><linearGradient id='g_body' x1='0%' y1='0%' x2='0%' y2='100%'><stop offset='0%' stop-color='%231e293b'/><stop offset='100%' stop-color='%230f172a'/></linearGradient></defs><rect x='10' y='10' width='80' height='120' rx='25' fill='url(%23g_body)' stroke='%23475569' stroke-width='3'/><rect x='25' y='30' width='50' height='15' rx='5' fill='%236366f1' opacity='0.2'/></svg>"
+      },
+      {
+        "id": "img_head",
+        "type": "bitmap",
+        "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'><defs><linearGradient id='g_head' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230f172a'/><stop offset='100%' stop-color='%231e293b'/></linearGradient></defs><circle cx='40' cy='40' r='35' fill='url(%23g_head)' stroke='%236366f1' stroke-width='2.5'/><circle cx='25' cy='35' r='6' fill='%2306b6d4'/><circle cx='55' cy='35' r='6' fill='%2306b6d4'/><path d='M 30 55 Q 40 65 50 55' fill='none' stroke='%2394a3b8' stroke-width='3' stroke-linecap='round'/></svg>"
+      },
+      {
+        "id": "img_arm_upper",
+        "type": "bitmap",
+        "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='40' viewBox='0 0 120 40'><defs><linearGradient id='g_upper' x1='0%' y1='0%' x2='100%' y2='0%'><stop offset='0%' stop-color='%236366f1'/><stop offset='100%' stop-color='%234f46e5'/></linearGradient></defs><rect x='5' y='5' width='110' height='30' rx='15' fill='url(%23g_upper)' stroke='%23818cf8' stroke-width='2'/><circle cx='20' cy='20' r='6' fill='%23ffffff' opacity='0.8'/><circle cx='100' cy='20' r='4' fill='%23ffffff' opacity='0.6'/></svg>"
+      },
+      {
+        "id": "img_arm_lower",
+        "type": "bitmap",
+        "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='30' viewBox='0 0 100 30'><defs><linearGradient id='g_lower' x1='0%' y1='0%' x2='100%' y2='0%'><stop offset='0%' stop-color='%23a855f7'/><stop offset='100%' stop-color='%237c3aed'/></linearGradient></defs><rect x='4' y='4' width='92' height='22' rx='11' fill='url(%23g_lower)' stroke='%23c084fc' stroke-width='2'/><circle cx='15' cy='15' r='5' fill='%23ffffff' opacity='0.8'/><circle cx='85' cy='15' r='3' fill='%23ffffff' opacity='0.6'/></svg>"
+      },
+      {
+        "id": "img_sword",
+        "type": "bitmap",
+        "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='40' viewBox='0 0 180 40'><defs><linearGradient id='g_sword' x1='0%' y1='50%' x2='100%' y2='50%'><stop offset='0%' stop-color='%2306b6d4'/><stop offset='80%' stop-color='%230891b2'/><stop offset='100%' stop-color='%23ffffff'/></linearGradient></defs><rect x='0' y='15' width='30' height='10' rx='3' fill='%231e293b' stroke='%2306b6d4' stroke-width='1.5'/><rect x='25' y='5' width='8' height='30' rx='2' fill='%23475569'/><path d='M 33 10 L 160 10 L 180 20 L 160 30 L 33 30 Z' fill='url(%23g_sword)' stroke='%2322d3ee' stroke-width='2'/><line x1='33' y1='20' x2='165' y2='20' stroke='%23ffffff' stroke-width='1' opacity='0.7'/></svg>"
+      },
+      {
+        "id": "img_shield",
+        "type": "bitmap",
+        "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><defs><linearGradient id='g_shield' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23f43f5e'/><stop offset='100%' stop-color='%23be123c'/></linearGradient></defs><path d='M 10 10 L 90 10 C 90 60, 50 95, 50 95 C 50 95, 10 60, 10 10 Z' fill='url(%23g_shield)' stroke='%23fb7185' stroke-width='3'/><path d='M 20 20 L 80 20 C 80 50, 50 80, 50 80 C 50 80, 20 50, 20 20 Z' fill='none' stroke='%23ffe4e6' stroke-width='1.5' opacity='0.4'/></svg>"
+      }
+    ]
+  },
+  "skeleton": {
+    "bones": [
+      { "id": "root", "parent": null, "x": 0, "y": 0, "rotation": 0, "scaleX": 1.0, "scaleY": 1.0 },
+      { "id": "body", "parent": "root", "x": 0, "y": 40, "rotation": 0, "scaleX": 1.0, "scaleY": 1.0 },
+      { "id": "head", "parent": "body", "x": 0, "y": -90, "rotation": 0, "scaleX": 1.0, "scaleY": 1.0 },
+      { "id": "shoulder_R", "parent": "body", "x": 45, "y": -60, "rotation": -45, "scaleX": 1.0, "scaleY": 1.0 },
+      { "id": "elbow_R", "parent": "shoulder_R", "x": 100, "y": 0, "rotation": 90, "scaleX": 1.0, "scaleY": 1.0 },
+      { "id": "shoulder_L", "parent": "body", "x": -45, "y": -60, "rotation": 45, "scaleX": 1.0, "scaleY": 1.0 },
+      { "id": "elbow_L", "parent": "shoulder_L", "x": -100, "y": 0, "rotation": -45, "scaleX": 1.0, "scaleY": 1.0 }
+    ],
+    "slots": [
+      {
+        "id": "slot_body",
+        "bone": "body",
+        "defaultAsset": "img_body",
+        "zIndex": 2,
+        "pivot": { "x": 0.5, "y": 0.5 }
+      },
+      {
+        "id": "slot_head",
+        "bone": "head",
+        "defaultAsset": "img_head",
+        "zIndex": 3,
+        "pivot": { "x": 0.5, "y": 0.5 }
+      },
+      {
+        "id": "slot_arm_upper_R",
+        "bone": "shoulder_R",
+        "defaultAsset": "img_arm_upper",
+        "zIndex": 4,
+        "pivot": { "x": 0.15, "y": 0.5 }
+      },
+      {
+        "id": "slot_arm_lower_R",
+        "bone": "elbow_R",
+        "defaultAsset": "img_arm_lower",
+        "zIndex": 5,
+        "pivot": { "x": 0.15, "y": 0.5 }
+      },
+      {
+        "id": "slot_weapon_R",
+        "bone": "elbow_R",
+        "defaultAsset": "img_sword",
+        "zIndex": 6,
+        "pivot": { "x": 0.15, "y": 0.5 }
+      },
+      {
+        "id": "slot_arm_upper_L",
+        "bone": "shoulder_L",
+        "defaultAsset": "img_arm_upper",
+        "zIndex": 1,
+        "pivot": { "x": 0.85, "y": 0.5 }
+      },
+      {
+        "id": "slot_arm_lower_L",
+        "bone": "elbow_L",
+        "defaultAsset": "img_arm_lower",
+        "zIndex": 0,
+        "pivot": { "x": 0.85, "y": 0.5 }
+      },
+      {
+        "id": "slot_shield_L",
+        "bone": "elbow_L",
+        "defaultAsset": "img_shield",
+        "zIndex": -1,
+        "pivot": { "x": 0.5, "y": 0.5 }
+      }
+    ]
+  },
+  "animations": {
+    "punch_sequence": {
+      "duration": 2000,
+      "timeline": {
+        "shoulder_R": {
+          "rotation": [
+            { "time": 0, "value": -45, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 400, "value": 20, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 700, "value": -90, "easing": [0.42, 0.0, 0.58, 1.0] },
+            { "time": 1000, "value": 45, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 1400, "value": -10, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 2000, "value": -45, "easing": [0.25, 0.1, 0.25, 1.0] }
+          ]
+        },
+        "elbow_R": {
+          "rotation": [
+            { "time": 0, "value": 90, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 400, "value": 15, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 700, "value": 130, "easing": [0.42, 0.0, 0.58, 1.0] },
+            { "time": 1000, "value": 10, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 1400, "value": 80, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 2000, "value": 90, "easing": [0.25, 0.1, 0.25, 1.0] }
+          ],
+          "scaleX": [
+            { "time": 0, "value": 1.0, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 400, "value": 1.4, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 700, "value": 0.8, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 1000, "value": 1.3, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 2000, "value": 1.0, "easing": [0.25, 0.1, 0.25, 1.0] }
+          ]
+        },
+        "shoulder_L": {
+          "rotation": [
+            { "time": 0, "value": 45, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 600, "value": -20, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 1200, "value": 80, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 2000, "value": 45, "easing": [0.25, 0.1, 0.25, 1.0] }
+          ]
+        },
+        "elbow_L": {
+          "rotation": [
+            { "time": 0, "value": -45, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 600, "value": -90, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 1200, "value": -15, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 2000, "value": -45, "easing": [0.25, 0.1, 0.25, 1.0] }
+          ]
+        },
+        "body": {
+          "y": [
+            { "time": 0, "value": 40, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 400, "value": 45, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 700, "value": 35, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 1000, "value": 45, "easing": [0.25, 0.1, 0.25, 1.0] },
+            { "time": 2000, "value": 40, "easing": [0.25, 0.1, 0.25, 1.0] }
+          ]
+        },
+        "slot_weapon_R": {
+          "zIndexKeyframe": [
+            { "time": 0, "value": 6 },
+            { "time": 699, "value": 6 },
+            { "time": 700, "value": 1 },
+            { "time": 1199, "value": 1 },
+            { "time": 1200, "value": 6 }
+          ]
+        }
+      }
+    }
+  }
+}

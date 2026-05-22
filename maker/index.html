@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2D Skeletal Animation Maker - Workspace Suite</title>
+  <link rel="stylesheet" href="./css/maker.css">
+</head>
+<body>
+
+  <!-- 1. 상단 글로벌 헤더 -->
+  <header class="maker-header">
+    <div class="maker-logo">Animate2D Maker</div>
+    <div class="header-actions">
+      <button id="btn-undo" class="neon-btn neon-btn-cyan" style="padding: 6px 12px; font-size: 12px;" disabled>
+        Undo (Ctrl+Z)
+      </button>
+      <button id="btn-redo" class="neon-btn neon-btn-cyan" style="padding: 6px 12px; font-size: 12px;" disabled>
+        Redo (Ctrl+Y)
+      </button>
+      <button id="btn-export-json" class="neon-btn neon-btn-cyan" style="padding: 6px 12px; font-size: 12px;" title="현재 작업을 JSON 파일로 컴퓨터에 수동 백업합니다.">
+        📥 Export JSON
+      </button>
+      <button id="btn-import-json" class="neon-btn neon-btn-cyan" style="padding: 6px 12px; font-size: 12px;" title="수동 백업된 JSON 파일을 불러와 작업을 복원합니다.">
+        📤 Import JSON
+      </button>
+      <input type="file" id="input-import-file" accept=".json" style="display: none;">
+      <button id="btn-clear-store" class="neon-btn neon-btn-rose" style="padding: 6px 12px; font-size: 12px;">
+        Format Session
+      </button>
+    </div>
+  </header>
+
+  <!-- [Q1 대응] 저장 공간 부족 및 시크릿 모드 사전 예고용 네온 경고 바 -->
+  <div id="storage-alert-bar" class="storage-warning-bar" style="display: none;">
+    <div style="display: flex; flex-direction: column; gap: 4px; width: 100%; text-align: left;">
+      <span>⚠️ <strong>로컬 디바이스 저장 제한 경고:</strong> <span id="storage-diagnostic-info">시크릿 모드 또는 저장 공간 한계가 우려됩니다.</span></span>
+      <span style="font-size: 10.5px; opacity: 0.85; color: rgba(255,255,255,0.7);">작업 유실 방지를 위해 주기적으로 상단 <strong>[📥 Export JSON]</strong> 버튼을 통한 수동 파일 백업이 필수적입니다. (메모리 내 Undo/Redo는 정상 가동)</span>
+    </div>
+    <button id="btn-alert-backup" class="neon-btn neon-btn-rose" style="padding: 6px 12px; font-size: 11px; margin-left: 15px; white-space: nowrap;">즉시 수동 백업</button>
+  </div>
+
+  <!-- 2. 4분할 마스터 워크스페이스 컨테이너 -->
+  <div class="workspace-container">
+    
+    <!-- [1 영역] 좌측 탐색기 (Project Tree) -->
+    <aside class="panel quadrant-left">
+      <div class="panel-header">
+        <span class="panel-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="9"/>
+            <rect x="14" y="3" width="7" height="5"/>
+            <rect x="14" y="12" width="7" height="9"/>
+            <rect x="3" y="16" width="7" height="5"/>
+          </svg>
+          Skeletal Tree
+        </span>
+      </div>
+      <div class="panel-body">
+        <ul id="bone-tree-list" class="tree-list">
+          <!-- JS를 통해 뼈대 계층 구조가 주입됩니다. -->
+        </ul>
+      </div>
+    </aside>
+
+    <!-- [2 영역] 중앙 실시간 WebGL/Canvas 뷰포트 (기즈모 잠금) -->
+    <main class="panel quadrant-center">
+      <div class="panel-header" style="position: absolute; top:0; left:0; right:0; z-index: 5; background: rgba(6, 9, 19, 0.8);">
+        <span class="panel-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <line x1="12" y1="2" x2="12" y2="22"/>
+          </svg>
+          Interactive Canvas Viewport (Gizmo Locked)
+        </span>
+      </div>
+      
+      <div class="canvas-wrapper" id="canvas-wrapper-container">
+        <!-- 캔버스가 동적으로 구동 영역으로 자동 계산 마운트됩니다. -->
+      </div>
+    </main>
+
+    <!-- [3 영역] 우측 속성 데이터 편집 패널 -->
+    <aside class="panel quadrant-right">
+      <div class="panel-header">
+        <span class="panel-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14"/>
+            <line x1="4" y1="10" x2="4" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12" y2="3"/>
+            <line x1="20" y1="21" x2="20" y2="16"/>
+            <line x1="20" y1="12" x2="20" y2="3"/>
+            <line x1="1" y1="14" x2="7" y2="14"/>
+            <line x1="9" y1="8" x2="15" y2="8"/>
+            <line x1="17" y1="16" x2="23" y2="16"/>
+          </svg>
+          SRT Properties
+        </span>
+        <span id="selected-bone-badge" class="neon-badge">Select Bone</span>
+      </div>
+      
+      <!-- [Q2 대응] 상위 오리진 피봇 상속 경로 브레드크럼 영역 -->
+      <div id="breadcrumb-container" class="breadcrumb-container" style="padding: 8px 12px; background: rgba(99, 102, 241, 0.08); border-bottom: 1px solid rgba(99, 102, 241, 0.15); font-size: 11px; color: var(--text-dim); display: none;">
+        <!-- JS를 통해 상속 체인이 브레드크럼 형태로 렌더링됩니다. -->
+      </div>
+
+      <div class="panel-body">
+        <div class="properties-grid">
+          
+          <!-- X Translation -->
+          <div class="property-row">
+            <span class="prop-name">Translate X</span>
+            <input type="number" step="1" id="input-tx" class="neon-input" placeholder="0" disabled>
+            <button id="lock-tx" class="lock-btn" title="Lock Toggle">🔒</button>
+          </div>
+
+          <!-- Y Translation -->
+          <div class="property-row">
+            <span class="prop-name">Translate Y</span>
+            <input type="number" step="1" id="input-ty" class="neon-input" placeholder="0" disabled>
+            <button id="lock-ty" class="lock-btn" title="Lock Toggle">🔒</button>
+          </div>
+
+          <!-- Rotation -->
+          <div class="property-row">
+            <span class="prop-name">Rotation (deg)</span>
+            <input type="number" step="1" id="input-rotation" class="neon-input" placeholder="0" disabled>
+            <button id="lock-rotation" class="lock-btn" title="Lock Toggle">🔒</button>
+          </div>
+
+          <!-- Scale X -->
+          <div class="property-row">
+            <span class="prop-name">Scale X</span>
+            <input type="number" step="0.05" id="input-scaleX" class="neon-input" placeholder="1.0" disabled>
+            <button id="lock-scaleX" class="lock-btn" title="Lock Toggle">🔒</button>
+          </div>
+
+          <!-- Scale Y -->
+          <div class="property-row">
+            <span class="prop-name">Scale Y</span>
+            <input type="number" step="0.05" id="input-scaleY" class="neon-input" placeholder="1.0" disabled>
+            <button id="lock-scaleY" class="lock-btn" title="Lock Toggle">🔒</button>
+          </div>
+
+          <!-- Easing Graph Curve -->
+          <div class="easing-preview-container">
+            <span class="neon-label">Easing Graph Curve (Cubic-Bezier)</span>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+              <input type="number" step="0.05" min="0" max="1" id="easing-x1" class="neon-input" value="0.25" style="width: 50px;" title="X1">
+              <input type="number" step="0.05" min="-1" max="2" id="easing-y1" class="neon-input" value="0.25" style="width: 50px;" title="Y1">
+              <input type="number" step="0.05" min="0" max="1" id="easing-x2" class="neon-input" value="0.75" style="width: 50px;" title="X2">
+              <input type="number" step="0.05" min="-1" max="2" id="easing-y2" class="neon-input" value="0.75" style="width: 50px;" title="Y2">
+            </div>
+            <canvas id="easing-canvas-preview" class="easing-canvas" width="200" height="120"></canvas>
+            <span class="neon-badge neon-badge-cyan" style="align-self: center; font-size: 9px;">Cyan: Easing | Purple: Derivative Acceleration</span>
+          </div>
+
+          <!-- [Q2 대응] 부모-자식 오리진 피봇 상속 안내 팁 박스 -->
+          <div class="origin-info-panel" style="margin-top: 15px; padding: 12px; background: rgba(99, 102, 241, 0.05); border: 1px dashed rgba(99, 102, 241, 0.2); border-radius: 8px; text-align: left;">
+            <div style="font-size: 11px; font-weight: 700; color: #a5b4fc; margin-bottom: 6px; display: flex; align-items: center; gap: 5px;">
+              <span>💡</span> 오리진 피봇 계층 트리 안내
+            </div>
+            <p style="font-size: 10.5px; color: var(--text-muted); line-height: 1.45; margin: 0;">
+              모든 하위 파츠 관절은 부모 관절의 오리진 피봇(Origin Pivot)에 종속됩니다. <br>
+              계층 구조의 최상위에 위치한 <strong>👑 ROOT ORIGIN (가장 핵심인 파츠 오리진)</strong>은 전체 오브젝트의 글로벌 좌표 및 움직임을 제어하는 <strong>기본 중심축</strong> 역할을 담당합니다.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </aside>
+
+    <!-- [4 영역] 하단 타임라인 시퀀서 -->
+    <footer class="panel quadrant-bottom">
+      
+      <!-- 타임라인 스크러버 및 재생 컨트롤러 -->
+      <div class="timeline-controls">
+        <button id="btn-play-toggle" class="neon-btn neon-btn-cyan" style="padding: 6px 12px; font-size: 13px;">
+          ▶ 재생
+        </button>
+        
+        <div class="timeline-slider-container">
+          <input type="range" id="timeline-scrubber" class="neon-slider" min="0" max="2000" value="0" step="10">
+          <span id="time-indicator" class="time-display">0 / 2000 ms</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <input type="checkbox" id="chk-onion-skin" style="cursor: pointer;">
+          <label for="chk-onion-skin" style="font-size: 12px; cursor: pointer; color: var(--text-muted);">
+            Onion Skin 가이드 켜기
+          </label>
+        </div>
+      </div>
+
+      <!-- 개별 노드/본 타임라인 트랙 -->
+      <div class="timeline-tracks" id="timeline-tracks-container">
+        <!-- JS를 통해 각 뼈대 관절 트랙과 키프레임 다이아몬드가 렌더링됩니다. -->
+      </div>
+      
+    </footer>
+
+  </div>
+
+  <!-- 비동기 ESM 모듈 바인딩 및 구동 개시 -->
+  <script type="module">
+    import { MakerApp } from './app.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const schemaPath = '../shared/demo-schema.json';
+        const maker = new MakerApp(schemaPath);
+        await maker.start();
+      } catch (err) {
+        console.error('[Maker Initializer] 메이커 저작도구 초기화 실패:', err);
+      }
+    });
+  </script>
+
+</body>
+</html>
