@@ -1,0 +1,59 @@
+{
+  "timeline_id": "intro_sequence",
+  "total_duration_ms": 10000,
+  "scenes": [
+    {
+      "scene_id": "scene_01",
+      "start_time_ms": 0,
+      "end_time_ms": 10000,
+      "background": {
+        "type": "image",
+        "asset_path": "assets/images/bg_knight_camp.png",
+        "color": "#FFFFFF"
+      },
+      "actors": [
+        {
+          "actor_id": "cat_main",
+          "asset_path": "assets/images/cat_idle.png",
+          "z_index": 10,
+          "actions": [
+            {
+              "type": "fade",
+              "start_ms": 500,
+              "end_ms": 1500,
+              "from": 0.0,
+              "to": 1.0,
+              "curve": "easeIn"
+            },
+            {
+              "type": "move",
+              "start_ms": 1500,
+              "end_ms": 3000,
+              "from_x": -100.0,
+              "from_y": 150.0,
+              "to_x": 200.0,
+              "to_y": 150.0,
+              "curve": "easeInOut"
+            },
+            {
+              "type": "scale",
+              "start_ms": 3000,
+              "end_ms": 4000,
+              "from_scale": 1.0,
+              "to_scale": 1.5,
+              "curve": "bounceOut"
+            },
+            {
+              "type": "rotate",
+              "start_ms": 4000,
+              "end_ms": 5000,
+              "from_angle": 0.0,
+              "to_angle": 360.0,
+              "curve": "linear"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
