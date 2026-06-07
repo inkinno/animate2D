@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:viewer_web/main.dart';
 import 'package:viewer_web/controllers/timeline_controller.dart';
-import 'package:viewer_web/screens/viewer_screen.dart';
+
 
 void main() {
   testWidgets('ViewerScreen renders without error', (WidgetTester tester) async {

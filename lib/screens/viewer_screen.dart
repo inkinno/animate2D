@@ -4,7 +4,8 @@ import '../controllers/timeline_controller.dart';
 import '../widgets/scene_renderer.dart';
 
 class ViewerScreen extends StatefulWidget {
-  const ViewerScreen({Key? key}) : super(key: key);
+  final String assetPath;
+  const ViewerScreen({Key? key, required this.assetPath}) : super(key: key);
 
   @override
   _ViewerScreenState createState() => _ViewerScreenState();
@@ -21,7 +22,7 @@ class _ViewerScreenState extends State<ViewerScreen> with SingleTickerProviderSt
     
     // Load timeline data
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _controller.loadTimeline('assets/data/timeline.json');
+      await _controller.loadTimeline(widget.assetPath);
       _controller.play(); // Auto-play
     });
   }
@@ -36,9 +37,23 @@ class _ViewerScreenState extends State<ViewerScreen> with SingleTickerProviderSt
           }
 
           return Stack(
-            children: controller.timeline!.scenes
-                .map((scene) => SceneRenderer(scene: scene))
-                .toList(),
+            children: [
+              ...controller.timeline!.scenes
+                  .map((scene) => SceneRenderer(scene: scene)),
+              Positioned(
+                top: 16,
+                left: 16,
+                child: SafeArea(
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
+                    onPressed: () {
+                      controller.pause();
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ),
+            ],
           );
         },
       ),

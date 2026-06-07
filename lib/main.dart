@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 
 import 'controllers/timeline_controller.dart';
-import 'screens/viewer_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() {
   runApp(
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ViewerScreen(),
+      home: const HomeScreen(),
     );
   }
 }
