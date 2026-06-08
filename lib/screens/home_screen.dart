@@ -12,12 +12,14 @@ class HomeScreen extends StatelessWidget {
       {
         'title': '프린세스 메이냥 - 15턴의 이세계 묘생',
         'image': 'assets/images/episode_1_cover.png',
-        'path': 'assets/data/timeline.json',
+        'episode_path': 'assets/data/episode_nodes.json',
+        'user_save_path': 'assets/data/user_save.json',
       },
       {
         'title': '다가오는 폭풍 (업데이트 예정)',
-        'image': 'assets/images/episode_1_cover.png', // Reusing dummy for now
-        'path': '',
+        'image': 'assets/images/episode_1_cover.png',
+        'episode_path': '',
+        'user_save_path': '',
       },
     ];
 
@@ -102,7 +104,7 @@ class HomeScreen extends StatelessWidget {
                           title: ep['title']!,
                           imagePath: ep['image']!,
                           onTap: () {
-                            if (ep['path']!.isEmpty) {
+                            if (ep['episode_path']!.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('아직 준비되지 않은 에피소드입니다.')),
                               );
@@ -113,7 +115,8 @@ class HomeScreen extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ViewerScreen(
-                                  assetPath: ep['path']!,
+                                  episodePath: ep['episode_path']!,
+                                  userSavePath: ep['user_save_path']!,
                                 ),
                               ),
                             );

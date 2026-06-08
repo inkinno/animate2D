@@ -3,14 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 
-import 'controllers/timeline_controller.dart';
+import 'controllers/engine_controller.dart';
 import 'screens/home_screen.dart';
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => TimelineController()),
+        ChangeNotifierProvider(create: (_) => EngineController()),
       ],
       child: const MyApp(),
     ),

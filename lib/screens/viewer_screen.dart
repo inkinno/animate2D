@@ -1,45 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../controllers/timeline_controller.dart';
+import '../controllers/engine_controller.dart';
 import '../widgets/scene_renderer.dart';
+import '../widgets/choice_overlay.dart';
+import '../models/node_model.dart';
 
 class ViewerScreen extends StatefulWidget {
-  final String assetPath;
-  const ViewerScreen({Key? key, required this.assetPath}) : super(key: key);
+  final String episodePath;
+  final String userSavePath;
+  const ViewerScreen({
+    Key? key,
+    required this.episodePath,
+    required this.userSavePath,
+  }) : super(key: key);
 
   @override
   _ViewerScreenState createState() => _ViewerScreenState();
 }
 
 class _ViewerScreenState extends State<ViewerScreen> with SingleTickerProviderStateMixin {
-  late TimelineController _controller;
+  late EngineController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = Provider.of<TimelineController>(context, listen: false);
+    _controller = Provider.of<EngineController>(context, listen: false);
     _controller.initController(this);
     
-    // Load timeline data
+    // Load data
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _controller.loadTimeline(widget.assetPath);
-      _controller.play(); // Auto-play
+      await _controller.loadData(widget.episodePath, widget.userSavePath);
+      _controller.startEngine(); // Start flat graph execution
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer<TimelineController>(
+      backgroundColor: Colors.black,
+      body: Consumer<EngineController>(
         builder: (context, controller, child) {
-          if (controller.timeline == null) {
+          final currentNode = controller.currentNode;
+
+          if (currentNode == null) {
             return const Center(child: CircularProgressIndicator());
+          }
+
+          Widget currentView;
+          
+          if (currentNode is SceneNodeModel) {
+            currentView = SceneRenderer(scene: currentNode.sceneData);
+          } else if (currentNode is EventNodeModel) {
+            currentView = ChoiceOverlay(eventNode: currentNode);
+          } else {
+            currentView = const SizedBox.shrink(); // Condition node
           }
 
           return Stack(
             children: [
-              ...controller.timeline!.scenes
-                  .map((scene) => SceneRenderer(scene: scene)),
+              currentView,
               Positioned(
                 top: 16,
                 left: 16,
@@ -57,17 +76,14 @@ class _ViewerScreenState extends State<ViewerScreen> with SingleTickerProviderSt
           );
         },
       ),
-      floatingActionButton: Consumer<TimelineController>(
+      floatingActionButton: Consumer<EngineController>(
         builder: (context, controller, child) {
           return FloatingActionButton(
             onPressed: () {
               if (controller.isPlaying) {
                 controller.pause();
               } else {
-                if (controller.elapsedMs >= (controller.timeline?.totalDurationMs ?? 0)) {
-                  controller.reset();
-                }
-                controller.play();
+                controller.resume();
               }
             },
             child: Icon(controller.isPlaying ? Icons.pause : Icons.play_arrow),

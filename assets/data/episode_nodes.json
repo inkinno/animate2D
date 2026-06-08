@@ -1,0 +1,110 @@
+{
+  "episode_id": "ep1",
+  "start_node_id": "node_1",
+  "nodes": [
+    {
+      "node_id": "node_1",
+      "type": "scene",
+      "next_node_id": "node_cond",
+      "scene_data": {
+        "scene_id": "intro",
+        "start_time_ms": 0,
+        "end_time_ms": 2000,
+        "background": {
+          "type": "color",
+          "asset_path": "",
+          "color": "#333333"
+        },
+        "actors": []
+      }
+    },
+    {
+      "node_id": "node_cond",
+      "type": "condition",
+      "target_var": "job",
+      "operator": "==",
+      "value": "마법사",
+      "true_node_id": "node_mage",
+      "false_node_id": "node_warrior"
+    },
+    {
+      "node_id": "node_mage",
+      "type": "scene",
+      "next_node_id": "node_choice",
+      "scene_data": {
+        "scene_id": "mage_scene",
+        "start_time_ms": 0,
+        "end_time_ms": 2000,
+        "background": {
+          "type": "color",
+          "asset_path": "",
+          "color": "#0000FF"
+        },
+        "actors": []
+      }
+    },
+    {
+      "node_id": "node_warrior",
+      "type": "scene",
+      "next_node_id": "node_choice",
+      "scene_data": {
+        "scene_id": "warrior_scene",
+        "start_time_ms": 0,
+        "end_time_ms": 2000,
+        "background": {
+          "type": "color",
+          "asset_path": "",
+          "color": "#FF0000"
+        },
+        "actors": []
+      }
+    },
+    {
+      "node_id": "node_choice",
+      "type": "event",
+      "event_type": "show_choices",
+      "choices": [
+        {
+          "label": "왼쪽으로 간다",
+          "next_node_id": "node_left"
+        },
+        {
+          "label": "오른쪽으로 간다",
+          "next_node_id": "node_right"
+        }
+      ]
+    },
+    {
+      "node_id": "node_left",
+      "type": "scene",
+      "next_node_id": "",
+      "scene_data": {
+        "scene_id": "left_scene",
+        "start_time_ms": 0,
+        "end_time_ms": 3000,
+        "background": {
+          "type": "color",
+          "asset_path": "",
+          "color": "#00FF00"
+        },
+        "actors": []
+      }
+    },
+    {
+      "node_id": "node_right",
+      "type": "scene",
+      "next_node_id": "",
+      "scene_data": {
+        "scene_id": "right_scene",
+        "start_time_ms": 0,
+        "end_time_ms": 3000,
+        "background": {
+          "type": "color",
+          "asset_path": "",
+          "color": "#FFFF00"
+        },
+        "actors": []
+      }
+    }
+  ]
+}

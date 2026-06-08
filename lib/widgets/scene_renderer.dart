@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/scene_model.dart';
-import '../controllers/timeline_controller.dart';
+import '../controllers/engine_controller.dart';
 import 'actor_renderer.dart';
 
 class SceneRenderer extends StatelessWidget {
   final SceneModel scene;
 
-  const SceneRenderer({Key? key, required this.scene}) : super(key: key);
+  const SceneRenderer({super.key, required this.scene});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TimelineController>(
+    return Consumer<EngineController>(
       builder: (context, controller, child) {
         int elapsedMs = controller.elapsedMs;
 

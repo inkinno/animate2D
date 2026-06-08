@@ -1,24 +1,31 @@
-import 'scene_model.dart';
+import 'node_model.dart';
 
 class TimelineModel {
-  final String timelineId;
-  final int totalDurationMs;
-  final List<SceneModel> scenes;
+  final String episodeId;
+  final String startNodeId;
+  final Map<String, BaseNodeModel> nodes;
 
   TimelineModel({
-    required this.timelineId,
-    required this.totalDurationMs,
-    required this.scenes,
+    required this.episodeId,
+    required this.startNodeId,
+    required this.nodes,
   });
 
   factory TimelineModel.fromJson(Map<String, dynamic> json) {
+    final Map<String, BaseNodeModel> parsedNodes = {};
+    
+    if (json['nodes'] != null) {
+      final nodesList = json['nodes'] as List<dynamic>;
+      for (var nodeJson in nodesList) {
+        final node = BaseNodeModel.fromJson(nodeJson);
+        parsedNodes[node.nodeId] = node;
+      }
+    }
+
     return TimelineModel(
-      timelineId: json['timeline_id'] ?? '',
-      totalDurationMs: json['total_duration_ms'] ?? 0,
-      scenes: (json['scenes'] as List<dynamic>?)
-              ?.map((e) => SceneModel.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
+      episodeId: json['episode_id'] ?? '',
+      startNodeId: json['start_node_id'] ?? '',
+      nodes: parsedNodes,
     );
   }
 }

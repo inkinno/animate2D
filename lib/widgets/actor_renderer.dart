@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/actor_model.dart';
 import '../models/action_model.dart';
-import '../controllers/timeline_controller.dart';
+import '../controllers/engine_controller.dart';
 import '../utils/tween_evaluator.dart';
 import 'dart:math' as math;
 
 class ActorRenderer extends StatelessWidget {
   final ActorModel actor;
 
-  const ActorRenderer({Key? key, required this.actor}) : super(key: key);
+  const ActorRenderer({super.key, required this.actor});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TimelineController>(
+    return Consumer<EngineController>(
       builder: (context, controller, child) {
         int elapsedMs = controller.elapsedMs;
 
