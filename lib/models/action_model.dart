@@ -15,6 +15,9 @@ class ActionModel {
   final double? fromAngle;
   final double? toAngle;
   final String curve;
+  final bool isLoop;
+  final bool playOnceAndHold;
+  final int randomStartOffset;
 
   ActionModel({
     required this.type,
@@ -31,6 +34,9 @@ class ActionModel {
     this.fromAngle,
     this.toAngle,
     required this.curve,
+    this.isLoop = false,
+    this.playOnceAndHold = true,
+    this.randomStartOffset = 0,
   });
 
   factory ActionModel.fromJson(Map<String, dynamic> json) {
@@ -53,6 +59,9 @@ class ActionModel {
       fromAngle: json['from_angle']?.toDouble(),
       toAngle: json['to_angle']?.toDouble(),
       curve: json['curve'] ?? 'linear',
+      isLoop: json['is_loop'] ?? false,
+      playOnceAndHold: json['play_once_and_hold'] ?? true,
+      randomStartOffset: json['random_start_offset'] ?? 0,
     );
   }
 }

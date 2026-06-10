@@ -8,8 +8,9 @@ import 'dart:math' as math;
 
 class ActorRenderer extends StatelessWidget {
   final ActorModel actor;
+  final bool isRoot;
 
-  const ActorRenderer({super.key, required this.actor});
+  const ActorRenderer({super.key, required this.actor, this.isRoot = true});
 
   @override
   Widget build(BuildContext context) {
@@ -21,43 +22,43 @@ class ActorRenderer extends StatelessWidget {
         double x = 0.0;
         double y = 0.0;
         double scale = 1.0;
-        double rotation = 0.0; // in degrees
+        double rotation = 0.0;
 
-        // 1. Set initial values based on the first action's 'from' parameters
+        // 1. 초기값 설정
         for (var action in actor.actions) {
           if (action.type == ActionType.move && action.fromX != null) {
-            x = action.fromX!;
-            y = action.fromY ?? 0.0;
-            break;
+            x = action.fromX!; y = action.fromY ?? 0.0;
           }
-        }
-        for (var action in actor.actions) {
           if (action.type == ActionType.scale && action.fromScale != null) {
             scale = action.fromScale!;
-            break;
           }
-        }
-        for (var action in actor.actions) {
           if (action.type == ActionType.fade && action.from != null) {
             opacity = action.from!;
-            break;
           }
-        }
-        for (var action in actor.actions) {
           if (action.type == ActionType.rotate && action.fromAngle != null) {
             rotation = action.fromAngle!;
-            break;
           }
         }
 
-        // 2. Evaluate actions based on current time
+        // 2. 시간에 따른 액션 연산 (Tweening)
         for (var action in actor.actions) {
-          if (elapsedMs >= action.startMs) {
-            double currentVal;
-            if (elapsedMs >= action.endMs) {
-              currentVal = 1.0;
+          int start = action.startMs + action.randomStartOffset;
+          int end = action.endMs + action.randomStartOffset;
+          
+          if (elapsedMs >= start) {
+            double currentVal = 1.0;
+            if (elapsedMs < end) {
+               currentVal = TweenEvaluator.evaluate(action, elapsedMs - action.randomStartOffset);
             } else {
-              currentVal = TweenEvaluator.evaluate(action, elapsedMs);
+               if (action.isLoop) {
+                  int duration = end - start;
+                  if (duration > 0) {
+                     int localMs = (elapsedMs - start) % duration;
+                     currentVal = TweenEvaluator.evaluate(action, start + localMs - action.randomStartOffset);
+                  }
+               } else if (!action.playOnceAndHold) {
+                  currentVal = 0.0; 
+               }
             }
 
             switch (action.type) {
@@ -90,31 +91,60 @@ class ActorRenderer extends StatelessWidget {
           }
         }
 
-        return Positioned(
-          left: x,
-          top: y,
-          child: Transform.scale(
-            scale: scale,
-            child: Transform.rotate(
-              angle: rotation * math.pi / 180,
-              child: Opacity(
-                opacity: opacity.clamp(0.0, 1.0),
-                child: Image.asset(
-                  actor.assetPath,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: 100,
-                      height: 100,
-                      color: Colors.red,
-                      child: const Center(child: Text('Image Error')),
-                    );
-                  },
-                ),
+        // 3. 컬링 최적화 (Culling)
+        final screenSize = MediaQuery.of(context).size;
+        bool isOffscreen = false;
+        if (isRoot) {
+            if (x < -2000 || x > screenSize.width + 2000 || y < -2000 || y > screenSize.height + 2000) {
+                isOffscreen = true;
+            }
+        }
+
+        if (isOffscreen) {
+            return const SizedBox(); // 컬링 적용 (렌더링 생략)
+        }
+
+        // 4. 위젯 트리 빌드 및 자식(Children) 재귀 호출
+        Widget actorWidget = Transform.scale(
+          scale: scale,
+          child: Transform.rotate(
+            angle: rotation * math.pi / 180,
+            child: Opacity(
+              opacity: opacity.clamp(0.0, 1.0),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  if (actor.assetPath.isNotEmpty)
+                    Image.asset(
+                      actor.assetPath,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => const SizedBox(),
+                    ),
+                  if (actor.children != null)
+                    ...actor.children!.map((childActor) => ActorRenderer(
+                          actor: childActor,
+                          isRoot: false,
+                        )),
+                ],
               ),
             ),
           ),
         );
+
+        if (isRoot) {
+          // 본체(Root)는 Positioned로 절대 좌표 이동
+          return Positioned(
+            left: x,
+            top: y,
+            child: actorWidget,
+          );
+        } else {
+          // 자식(Children)은 상위 객체 기준 상대 좌표(Translate) 이동
+          return Transform.translate(
+            offset: Offset(x, y),
+            child: actorWidget,
+          );
+        }
       },
     );
   }

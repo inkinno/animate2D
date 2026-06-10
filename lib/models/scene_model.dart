@@ -26,6 +26,7 @@ class SceneModel {
   final int endTimeMs;
   final BackgroundModel? background;
   final List<ActorModel> actors;
+  final ActorModel? cameraTrack; // 가상 카메라 트랙 지원
 
   SceneModel({
     required this.sceneId,
@@ -33,6 +34,7 @@ class SceneModel {
     required this.endTimeMs,
     this.background,
     required this.actors,
+    this.cameraTrack,
   });
 
   factory SceneModel.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,9 @@ class SceneModel {
               ?.map((e) => ActorModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      cameraTrack: json['camera_track'] != null
+          ? ActorModel.fromJson(json['camera_track'])
+          : null,
     );
   }
 }

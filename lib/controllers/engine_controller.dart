@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:async';
 import '../models/timeline_model.dart';
 import '../models/node_model.dart';
 import '../models/user_data_model.dart';
 
 class EngineController extends ChangeNotifier {
+  final String episodePath;
+  final String userSavePath;
+
   TimelineModel? _timeline;
   UserDataModel? _userData;
 
@@ -17,6 +21,11 @@ class EngineController extends ChangeNotifier {
 
   late AnimationController _animationController;
   AnimationController get animationController => _animationController;
+
+  StreamSubscription? _episodeWatcher;
+  StreamSubscription? _userSaveWatcher;
+
+  EngineController({this.episodePath = '', this.userSavePath = ''});
 
   void initController(TickerProvider vsync) {
     _animationController = AnimationController(
@@ -30,6 +39,26 @@ class EngineController extends ChangeNotifier {
           _onSceneCompleted();
         }
       });
+      
+    _setupWatchers();
+    // 초기 로딩
+    loadData(episodePath, userSavePath);
+  }
+  
+  void _setupWatchers() {
+      // JSON 파일 내용이 외부(파이썬 에디터)에서 변경되면 엔진을 자동 재시작(Hot Reload)
+      if (episodePath.isNotEmpty && File(episodePath).existsSync()) {
+          _episodeWatcher = File(episodePath).watch().listen((event) {
+             print("Episode data changed! Hot reloading...");
+             Future.delayed(const Duration(milliseconds: 100), () => loadData(episodePath, userSavePath));
+          });
+      }
+      if (userSavePath.isNotEmpty && File(userSavePath).existsSync()) {
+          _userSaveWatcher = File(userSavePath).watch().listen((event) {
+             print("User save changed! Reloading...");
+             Future.delayed(const Duration(milliseconds: 100), () => loadData(episodePath, userSavePath));
+          });
+      }
   }
 
   int get elapsedMs {
@@ -41,24 +70,39 @@ class EngineController extends ChangeNotifier {
     return 0;
   }
 
-  Future<void> loadData(String episodePath, String userSavePath) async {
+  Future<void> loadData(String episodePathParam, String userSavePathParam) async {
     try {
-      final String epResponse = await rootBundle.loadString(episodePath);
-      final epData = await json.decode(epResponse);
-      _timeline = TimelineModel.fromJson(epData);
-
-      final String userResponse = await rootBundle.loadString(userSavePath);
-      final userDataJson = await json.decode(userResponse);
-      _userData = UserDataModel.fromJson(userDataJson);
+      if (episodePathParam.isNotEmpty) {
+          final file = File(episodePathParam);
+          if (await file.exists()) {
+             final epResponse = await file.readAsString();
+             final epData = json.decode(epResponse);
+             _timeline = TimelineModel.fromJson(epData);
+          }
+      }
+      
+      if (userSavePathParam.isNotEmpty) {
+          final file = File(userSavePathParam);
+          if (await file.exists()) {
+             final userResponse = await file.readAsString();
+             final userDataJson = json.decode(userResponse);
+             _userData = UserDataModel.fromJson(userDataJson);
+          }
+      }
 
       notifyListeners();
+      
+      // Auto start if graph is loaded and we are not playing
+      if (_timeline != null && !_isPlaying) {
+          startEngine();
+      }
     } catch (e) {
       print('Error loading data: $e');
     }
   }
 
   void startEngine() {
-    if (_timeline == null || _userData == null) return;
+    if (_timeline == null) return;
     _playNode(_timeline!.startNodeId);
   }
 
@@ -151,6 +195,8 @@ class EngineController extends ChangeNotifier {
   @override
   void dispose() {
     _animationController.dispose();
+    _episodeWatcher?.cancel();
+    _userSaveWatcher?.cancel();
     super.dispose();
   }
 }
